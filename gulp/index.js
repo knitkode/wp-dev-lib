@@ -1,6 +1,6 @@
 var fs = require('fs');
 var onlyScriptsTasks = require('./util-script-filter');
-var tasksCommon = fs.readdirSync('./config/common/gulp/').filter(onlyScriptsTasks);
+var tasksCommon = fs.readdirSync('./config/common/gulp/task-*').filter(onlyScriptsTasks);
 var tasks = fs.readdirSync('./config/gulp/').filter(onlyScriptsTasks);
 
 // These variables are intentionally global,
@@ -11,6 +11,6 @@ CONFIG = require('./config');
 PLUGINS = require('./plugins');
 
 // require each .js file in the tasks folder
-tasksCommon.concat(tasks).forEach(function(task) {
+tasksCommon.concat(tasks).forEach(function (task) {
   require('./' + task);
 });
