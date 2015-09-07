@@ -1,6 +1,6 @@
 var fs = require('fs');
 var onlyScriptsTasks = require('./util-script-filter');
-var tasksCommon = fs.readdirSync('./config/dev-lib/gulp/').filter(onlyScriptsTasks);
+var tasksCommon = fs.readdirSync('./config/common/gulp/').filter(onlyScriptsTasks);
 var tasks = fs.readdirSync('./config/gulp/').filter(onlyScriptsTasks);
 
 // These variables are intentionally global,

@@ -14,13 +14,13 @@ Quick usage
 
 ```bash
 # To add it to your repo, from the `/config` folder do:
-git submodule add https://github.com/PlusWP/wp-dev-lib.git dev-lib
+git submodule add https://github.com/PlusWP/wp-dev-lib.git config/common
 
 # To update the library with the latest changes:
-git submodule update --remote dev-lib
-git add dev-lib
-git commit -m "Update dev-lib"
+git submodule update --remote config/common
+git add config/common
+git commit -m "Update config/common from wp-dev-lib"
 
 # one liner
-git submodule update --remote dev-lib && git add dev-lib && git commit -m "Update dev-lib"
+git submodule update --remote config/common && git add config/common && git commit -m "Update config/common from wp-dev-lib"
 ```
