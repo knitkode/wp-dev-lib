@@ -13,7 +13,7 @@ Quick usage
 ---------------
 
 ```bash
-# To add it to your repo, do:
+# To add it to your repo, from the `/config` folder do:
 git submodule add https://github.com/PlusWP/wp-dev-lib.git dev-lib
 
 # To update the library with the latest changes:
