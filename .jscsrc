@@ -1,8 +1,9 @@
 {
-	"preset": "wordpress",
-	"excludeFiles": [
-		"**/vendor/**",
-		"**/*.min.js",
-		"**/node_modules/**"
-	]
+  "preset": "wordpress",
+  "excludeFiles": [
+    "**/vendor/**",
+    "**/*.min.js",
+    "**/node_modules/**",
+    "**/bower_components/**"
+  ]
 }
