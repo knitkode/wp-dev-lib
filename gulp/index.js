@@ -1,3 +1,7 @@
+/* global gulp, $, CONFIG, PLUGINS */
+/* jshint node: true, undef: false */
+'use strict';
+
 var fs = require('fs');
 var onlyScriptsTasks = require('./util-script-filter');
 var tasksCommon = fs.readdirSync('./config/common/gulp/').filter(onlyScriptsTasks);

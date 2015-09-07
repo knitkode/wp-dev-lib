@@ -1,3 +1,6 @@
+/* jshint node: true */
+'use strict';
+
 /**
  * SWIG filter: phpArray
  * Transform a javascript array
