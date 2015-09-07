@@ -2,6 +2,13 @@
 
 Look at the [original repo](https://github.com/xwp/wp-dev-lib) readme.
 
+Differences from original repo
+---------------
+- One of the main difference is that the branch to be deployed to WordPress or, in general, the production branch containing the code distributed to the users is the `trunk` branch and not `master`, which is instead used for development.
+- More rules to `phpcs`.
+- Different `jshintrc` rules, less WordPress like.
+
+
 Quick usage
 ---------------
 
