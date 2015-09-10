@@ -1,5 +1,4 @@
-/* global gulp, $, CONFIG, PLUGINS */
-/* jshint node: true, undef: false */
+/* jshint node: true */
 'use strict';
 
 var fs = require('fs');
@@ -9,10 +8,10 @@ var tasks = fs.readdirSync('./config/gulp/').filter(onlyScriptsTasks);
 
 // These variables are intentionally global,
 // otherwise we had to redefine them in every single task
-gulp = require('gulp');
-$ = require('gulp-load-plugins')();
-CONFIG = require('./config');
-PLUGINS = require('./plugins');
+global.gulp = require('gulp');
+global.$ = require('gulp-load-plugins')();
+global.CONFIG = require('./config');
+global.PLUGINS = require('./plugins');
 
 // require each .js file in the config/common/gulp folder
 tasksCommon.forEach(function (task) {
