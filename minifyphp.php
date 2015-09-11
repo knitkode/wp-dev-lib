@@ -4,7 +4,7 @@
  * Tiny_Php
  *
  * Adapted, variable replacement deleted, only strip whitespaces and comments
- * @see  https://github.com/mattgaidica/TinyPHP
+ * @see http://git.io/vZ05I
  * About tokens @link(http://php.net/manual/en/tokens.php, php docs).
  * For another solution see
  * @link(http://php.net/manual/it/function.php-strip-whitespace.php#82437, source)

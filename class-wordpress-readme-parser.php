@@ -1,8 +1,9 @@
 <?php
 /**
  * Lightweight WordPress readme.txt parser and converter to Markdown
- * The WordPress-Plugin-Readme-Parser project is too heavy and has too many dependencies for what we need (we don't need conversion to HTML)
- * @link https://github.com/markjaquith/WordPress-Plugin-Readme-Parser Alternative to WordPress-Plugin-Readme-Parser
+ * The WordPress-Plugin-Readme-Parser project is too heavy and has
+ * too many dependencies for what we need (we don't need conversion to HTML)
+ * @link http://git.io/vZ07A Alternative to WordPress-Plugin-Readme-Parser
  * @version 1.1.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
  * @copyright Copyright (c) 2013, XWP <https://xwp.co/>
