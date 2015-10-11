@@ -15,11 +15,11 @@ gulp.task('default', ['build', 'watch']);
 //   'gulp zip'
 // ]));
 
-gulp.task('all', $.sequence.task(['_all-pre', '_all-post']);
-gulp.task('_all-pre', $.shell.task(['gulp release-clean', 'gulp build --dist']);
-gulp.task('_all-post', ['_all-pre'], $.sequence.task([
+gulp.task('all', $.sequence('_all-pre', '_all-post'));
+gulp.task('_all-pre', $.shell.task(['gulp release-clean', 'gulp build --dist']));
+gulp.task('_all-post', ['_all-pre'], $.sequence(
   'release-prepare',
   'release-lang',
   'deploy',
   'zip'
-]);
+));

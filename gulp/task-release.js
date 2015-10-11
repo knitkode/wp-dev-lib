@@ -15,10 +15,10 @@ var pathMoFiles = [
 ];
 
 // @access public
-gulp.task('release', $.sequence([
+gulp.task('release', $.sequence(
   'release-prepare',
   'release-lang'
-]));
+));
 
 // @access public
 gulp.task('release-clean', function () {
