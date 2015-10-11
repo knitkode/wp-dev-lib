@@ -6,11 +6,11 @@
 gulp.task('default', ['build', 'watch']);
 
 // @access public
-gulp.task('all',  $.shell.task([
+gulp.task('all',  $.sequence([
   'gulp release-clean',
   'gulp build --dist',
   'gulp release-prepare',
   'gulp release-lang',
   'gulp deploy',
   'gulp zip'
-]));
+]);
