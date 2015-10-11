@@ -13,4 +13,4 @@ gulp.task('all',  $.sequence([
   'gulp release-lang',
   'gulp deploy',
   'gulp zip'
-]);
+]));
