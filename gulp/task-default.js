@@ -11,5 +11,6 @@ gulp.task('all',  $.shell.task([
   'gulp build --dist',
   'gulp release-prepare',
   'gulp release-lang',
-  'gulp deploy'
+  'gulp deploy',
+  'gulp zip'
 ]));
