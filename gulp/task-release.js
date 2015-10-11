@@ -34,7 +34,7 @@ gulp.task('release-lang', ['_release-lang-mo_rename'], function () {
 });
 
 // @access private
-gulp.task('_release-lang-prepare', ['_release-replace-words'], $.sequence(['grunt-lang']));
+gulp.task('_release-lang-prepare', ['_release-replace-words'], $.sequence('grunt-lang'));
 
 // @access private
 gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
