@@ -6,7 +6,10 @@
 gulp.task('default', ['build', 'watch']);
 
 // @access public
-gulp.task('dist', $.shell(['gulp build --dist']));
+gulp.task('dist', function () {
+  gulp.src('')
+    .pipe($.shell(['gulp build --dist']));
+});
 
 // @access public
 gulp.task('all',  $.sequence([
