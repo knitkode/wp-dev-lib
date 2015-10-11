@@ -5,19 +5,11 @@
 // @access public
 gulp.task('default', ['build', 'watch']);
 
+gulp.task('dist', $.shell.task(['gulp build --dist']));
 // @access public
-// gulp.task('all',  $.shell.task([
-//   'gulp release-clean',
-//   'gulp build --dist',
-//   'gulp release-prepare',
-//   'gulp release-lang',
-//   'gulp deploy',
-//   'gulp zip'
-// ]));
-
-gulp.task('all', $.sequence('_all-pre', '_all-post'));
-gulp.task('_all-pre', $.shell.task(['gulp release-clean', 'gulp build --dist']));
-gulp.task('_all-post', ['_all-pre'], $.sequence(
+gulp.task('all', $.sequence(
+  'release-clean',
+  'dist',
   'release-prepare',
   'release-lang',
   'deploy',
