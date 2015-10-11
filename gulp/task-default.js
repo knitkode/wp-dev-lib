@@ -8,10 +8,10 @@ gulp.task('default', ['build', 'watch']);
 gulp.task('dist', $.shell.task(['gulp build --dist']));
 // @access public
 gulp.task('all',  $.sequence([
-  'gulp release-clean',
-  'gulp build --dist',
-  'gulp release-prepare',
-  'gulp release-lang',
-  'gulp deploy',
-  'gulp zip'
+  'release-clean',
+  'dist',
+  'release-prepare',
+  'release-lang',
+  'deploy',
+  'zip'
 ]));
