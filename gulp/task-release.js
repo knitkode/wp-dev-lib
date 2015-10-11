@@ -66,6 +66,7 @@ gulp.task('_release-replace-words', function () {
     .pipe($.replace('pkgAuthorName', pkg.author.name, options))
     .pipe($.replace('pkgAuthorEmail', pkg.author.email, options))
     .pipe($.replace('pkgAuthorUrl', pkg.author.url, options))
+    .pipe($.replace('pkgLicense', pkg.license, options))
     .pipe($.replace('pkgLicenseType', pkg.license.type, options))
     .pipe($.replace('pkgLicenseUrl', pkg.license.url, options))
     .pipe($.replace('pkgConfigTags', tags.join(', '), options))
