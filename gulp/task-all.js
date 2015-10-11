@@ -7,8 +7,7 @@ gulp.task('all', $.sequence(
   '_all-set-dist',
   'release-clean',
   'build',
-  'release-prepare',
-  'release-lang',
+  'release',
   'deploy',
   'zip'
 ));

@@ -16,17 +16,15 @@ var pathMoFiles = [
 
 // @access public
 gulp.task('release', $.sequence(
-  'release-prepare',
-  'release-lang'
+  '_release-replace-words',
+  'release-lang',
+  '_release-create-index'
 ));
 
 // @access public
 gulp.task('release-clean', function () {
   del.sync(PATHS.build.root + '/**');
 });
-
-// @access public
-gulp.task('release-prepare', ['_release-replace-words', '_release-create-index']);
 
 // @access public
 gulp.task('release-lang', ['_release-lang-mo_rename'], function () {
