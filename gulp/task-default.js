@@ -9,7 +9,7 @@ gulp.task('dist', $.shell.task(['gulp build --dist']));
 // @access public
 gulp.task('all', $.sequence(
   'release-clean',
-  'dist',
+  'build',
   'release-prepare',
   'release-lang',
   'deploy',
