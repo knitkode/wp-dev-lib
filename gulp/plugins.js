@@ -6,10 +6,35 @@
  * @type {Object}
  */
 module.exports = {
-  // gulp-modernizr shared options
+  autoprefixer: {
+    browsers: ['> 1%', 'last 2 versions', 'ie 8']
+  },
+  concat: {
+    newLine: '\n\n\n'
+  },
+  cssMqpacker: {
+    sort: true
+  },
+  imagemin: {
+    progressive: true,
+    interlaced: true,
+    // don't remove IDs from SVGs, they are often used
+    // as hooks for embedding and styling
+    svgoPlugins: [{cleanupIDs: false}]
+  },
+  // http://jscs.info/overview#options
+  jscs: {
+    configPath: '.jscsrc',
+    fix: true
+  },
+  jsonEditor: {
+    'indent_char': ' ',
+    'indent_size': 2
+  },
+  // Based on default settings on http://modernizr.com/download/
   modernizr: {
     'cache' : true,
-    'options': [ // Based on default settings on http://modernizr.com/download/
+    'options': [
       'setClasses',
       'addTest',
       'testProp',
@@ -18,6 +43,15 @@ module.exports = {
     'excludeTests': [],
     'crawl' : false,
     'customTests' : []
+  },
+  sass: {
+    outputStyle: 'expanded',
+    precision: 10,
+    includePaths: ['.']
+  },
+  // https://www.npmjs.com/package/gulp-trimlines
+  trimlines: {
+    leading: false
   },
   uglify: {
     preserveComments: 'some', // --comments
@@ -35,22 +69,5 @@ module.exports = {
     mangleRegex: '/^_/', // --mangle-regex='/^_/'
     reserveDomprops: true // --reserve-domprops
     // --name-cache .tmp/uglify-cache.json
-  },
-  concat: {
-    newLine: '\n\n\n'
-  },
-  autoprefixer: 'last 2 version',
-  jsonEditor: {
-    'indent_char': ' ',
-    'indent_size': 2
-  },
-  // https://www.npmjs.com/package/gulp-trimlines
-  trimlines: {
-    leading: false
-  },
-  // http://jscs.info/overview#options
-  jscs: {
-    configPath: '.jscsrc',
-    fix: true
   }
 };
