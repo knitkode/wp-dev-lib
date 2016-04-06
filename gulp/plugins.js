@@ -56,6 +56,7 @@ module.exports = {
   trimlines: {
     leading: false
   },
+  // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglify: {
     preserveComments: 'license', // --comments
     toplevel: true,
@@ -67,7 +68,6 @@ module.exports = {
       }
     },
   },
-  // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglifyCustomScripts: { // @@temp see readme... \\
     mangleProperties: { // --mangle-props
       regex: '/^_(?!format|default|value|dirty|toggleActive)(.+)/', // --mangle-regex='/^_/'
