@@ -56,26 +56,23 @@ module.exports = {
   trimlines: {
     leading: false
   },
-  // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglify: {
     preserveComments: 'license', // --comments
     toplevel: true,
+    mangle: true, // --mangle
     compress: {
       drop_console: true, // --compress drop_console=true
       global_defs: {
         DEBUG: false // --define DEBUG=false
       }
     },
-    mangle: true, // --mangle
-    mangleProperties: { // --mangle-props
-      regex: '/^_(?!format|default|value|dirty|toggleActive)(.+)/', // --mangle-regex='/^_/'
-    }
   },
+  // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglifyCustomScripts: { // @@temp see readme... \\
     mangleProperties: { // --mangle-props
       regex: '/^_(?!format|default|value|dirty|toggleActive)(.+)/', // --mangle-regex='/^_/'
-    }
-    // reserveDomprops: true, // --reserve-domprops
-    // nameCache: './.tmp/uglify--customize-name_cache.json' // --name-cache .tmp/uglify-cache.json
+    },
+    nameCache: '../roots/.tmp/uglify--customize-name_cache.json' // --name-cache .tmp/uglify-cache.json
+    // reserveDomprops: true // --reserve-domprops
   }
 };
