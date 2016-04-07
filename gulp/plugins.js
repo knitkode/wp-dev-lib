@@ -12,6 +12,10 @@ module.exports = {
   concat: {
     newLine: '\n\n\n'
   },
+  cssnano: {
+    // @see https://github.com/ben-eb/cssnano/issues/136
+    reduceIdents: false
+  }
   cssMqpacker: {
     sort: true
   },
