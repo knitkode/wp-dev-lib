@@ -65,8 +65,7 @@ module.exports = {
       drop_console: true, // --compress drop_console=true
       global_defs: {
         DEBUG: false // --define DEBUG=false
-      },
-      collapse_vars: true // --compress collapse_vars=true
+      }
     },
   },
   uglifyCustomScripts: { // @@temp see readme... \\
