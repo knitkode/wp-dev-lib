@@ -14,7 +14,9 @@ module.exports = {
   },
   cssnano: {
     // @@tomonitor https://github.com/ben-eb/cssnano/issues/136 \\
-    reduceIdents: false
+    reduceIdents: false,
+    zindex: false, // http://cssnano.co/optimisations/#optimise-z-index-unsafe-
+    discardUnused: false // let's disable all the unsafe options
   },
   cssMqpacker: {
     sort: true
