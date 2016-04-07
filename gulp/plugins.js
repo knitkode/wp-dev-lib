@@ -70,7 +70,7 @@ module.exports = {
   },
   uglifyCustomScripts: { // @@temp see readme... \\
     mangleProperties: { // --mangle-props
-      regex: '/^_(?!format|default|value|dirty|toggleActive)(.+)/', // --mangle-regex='/^_/'
+      regex: /^_(?!format|default|value|dirty|toggleActive)(.+)/, // --mangle-regex='/^_/'
     },
     nameCache: '../roots/.tmp/uglify--customize-name_cache.json' // --name-cache .tmp/uglify-cache.json
     // reserveDomprops: true // --reserve-domprops
