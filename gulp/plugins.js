@@ -65,14 +65,18 @@ module.exports = {
       drop_console: true, // --compress drop_console=true
       global_defs: {
         DEBUG: false // --define DEBUG=false
-      }
+      },
+      collapse_vars: true // --compress collapse_vars=true
     },
   },
   uglifyCustomScripts: { // @@temp see readme... \\
     mangleProperties: { // --mangle-props
       regex: /^_(?!format|default|value|dirty|toggleActive)(.+)/, // --mangle-regex='/^_/'
     },
-    nameCache: '../roots/.tmp/uglify--customize-name_cache.json' // --name-cache .tmp/uglify-cache.json
+    nameCache: '../roots/.tmp/uglify--customize-name_cache.json', // --name-cache .tmp/uglify-cache.json
+    compress: {
+      unsafe: true // --compress unsafe=true
+    }
     // reserveDomprops: true // --reserve-domprops
   }
 };
