@@ -9,6 +9,12 @@ module.exports = {
   autoprefixer: {
     browsers: ['> 1%', 'last 2 versions', 'ie 8']
   },
+  base64: {
+    // baseDir: PATHS.src.assets,
+    extensions: ['svg', 'png'],
+    maxImageSize: 8 * 1024,
+    debug: false
+  },
   concat: {
     newLine: '\n\n\n'
   },
