@@ -19,6 +19,7 @@ module.exports = {
     newLine: '\n\n\n'
   },
   cssnano: {
+    safe: true, // @see https://github.com/ben-eb/cssnano/issues/28 \\
     // @@tomonitor https://github.com/ben-eb/cssnano/issues/136 \\
     reduceIdents: false,
     zindex: false, // http://cssnano.co/optimisations/#optimise-z-index-unsafe-
