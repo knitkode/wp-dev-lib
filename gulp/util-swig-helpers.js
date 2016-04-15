@@ -7,7 +7,7 @@
  * in a simple php array with the right syntax and the WordPress coding standard
  *
  * @param  {Array} input
- * @return {String}
+ * @return {string}
  */
 module.exports.phpArray = function (input) {
   if (!input instanceof Array) {
@@ -27,8 +27,8 @@ module.exports.phpArray = function (input) {
  * Also add the WordPress i18n syntax for certain `type` of `input`.
  *
  * @param  {mixed} input
- * @param  {String} type  The type of input
- * @return {String}       The 'php ready' input
+ * @param  {string} type  The type of input
+ * @return {string}       The 'php ready' input
  */
 module.exports.phpQuotes = function (input, type) {
   var toTranslate = [
