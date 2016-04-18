@@ -11,7 +11,7 @@ module.exports = {
   },
   base64: {
     // baseDir: PATHS.src.assets,
-    extensions: ['svg', 'png'],
+    extensions: ['svg', 'png', 'gif'],
     maxImageSize: 8 * 1024,
     debug: false
   },
