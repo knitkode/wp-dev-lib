@@ -85,7 +85,7 @@ module.exports = {
     mangleProperties: { // --mangle-props
       regex: /^_(?!format|default|value|dirty|toggleActive|process)(.+)/, // --mangle-regex='/^_/'
     },
-    nameCache: '../roots/.tmp/uglify--customize-name_cache.json', // --name-cache .tmp/uglify-cache.json
+    nameCache: '../customize-plus-premium/config/uglify--customize-name_cache.json', // --name-cache .tmp/uglify-cache.json
     compress: {
       unsafe: true // --compress unsafe=true
     }
