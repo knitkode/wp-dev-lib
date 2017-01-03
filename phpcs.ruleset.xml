@@ -2,20 +2,22 @@
 <ruleset name="WordPress Coding Standards">
 	<description>Generally-applicable sniffs for WordPress projects</description>
 
-	<rule ref="WordPress-Extra" />
+  <!--
+  <rule ref="WordPress-Extra" />
   <rule ref="WordPress-Core" />
   <rule ref="WordPress-VIP" />
-  <!--
     We may want a middle ground though. The best way to do this is add the
     entire ruleset, then rule by rule, remove ones that don't suit a project. We
     can do this by running `phpcs` with the '-s' flag, to see the names of the
     different Sniffs, as their rules are broken. From here, we can opt to
     exclude problematic sniffs like so.
-  -->
   <exclude name="WordPress.XSS.EscapeOutput"/>
+  -->
 
-  <exclude-pattern>*/tests/*</exclude-pattern>
-  <exclude-pattern>*/vendor/*</exclude-pattern>
-  <exclude-pattern>*/dev-lib/*</exclude-pattern>
-  <exclude-pattern>/node_modules/*</exclude-pattern>
+	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Docs" />
+
+	<exclude-pattern>*/dev-lib/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
 </ruleset>
