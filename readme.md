@@ -17,6 +17,7 @@ This repo is used as a submodule, renamed as `common`, it must stays in the `./c
 ```bash
 # To add it to your repo, from the `/config` folder do:
 git submodule add https://github.com/PlusWP/wp-dev-lib.git config/common
+git submodule update --init config/common
 
 # To update the library with the latest changes:
 git submodule update --remote config/common
