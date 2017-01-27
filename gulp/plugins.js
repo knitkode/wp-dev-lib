@@ -9,6 +9,9 @@ module.exports = {
   autoprefixer: {
     browsers: ['> 1%', 'last 2 versions', 'ie 8']
   },
+  babel: {
+    presets: ['es2015']
+  },
   base64: {
     // baseDir: PATHS.src.assets,
     extensions: ['svg', 'png', 'gif'],
