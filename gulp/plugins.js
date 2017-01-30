@@ -7,7 +7,7 @@
  */
 module.exports = {
   autoprefixer: {
-    browsers: ['> 1%', 'last 2 versions', 'ie 8']
+    browsers: ['> 1%', 'last 2 versions', 'ie 9']
   },
   babel: {
     presets: ['es2015']
