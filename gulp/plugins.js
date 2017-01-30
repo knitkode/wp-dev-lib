@@ -13,7 +13,7 @@ module.exports = {
     presets: ['es2015']
   },
   base64: {
-    // baseDir: PATHS.src.assets,
+    // baseDir: PATHS.src.root,
     extensions: ['svg', 'png', 'gif'],
     maxImageSize: 8 * 1024,
     debug: false
