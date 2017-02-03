@@ -1,5 +1,7 @@
 # wp-dev-lib
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/db5b5f18bef74995864a29e72074a741)](https://www.codacy.com/app/pluswpress/wp-dev-lib?utm_source=github.com&utm_medium=referral&utm_content=PlusWP/wp-dev-lib&utm_campaign=badger)
+
 Look at the [original repo](https://github.com/xwp/wp-dev-lib) readme.
 
 Differences from original repo
