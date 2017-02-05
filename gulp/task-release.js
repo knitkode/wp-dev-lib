@@ -10,8 +10,8 @@ var path = require('path');
 var folders = require('./util-get-folders');
 var del = require('del');
 var pathMoFiles = [
-  './build/languages/*.mo',
-  '!./build/languages/' + pkg.config.textDomain + '-*.mo'
+  path.join(PATH_BUILD_BASE, 'languages', '/*.mo'),
+  path.join('!' + PATH_BUILD_BASE, 'languages', pkg.config.textDomain + '-*.mo' )
 ];
 
 // @access public
@@ -38,7 +38,7 @@ gulp.task('_release-lang-prepare', ['_release-replace-words'], $.sequence('grunt
 gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
   return gulp.src(pathMoFiles)
     .pipe($.rename({ prefix: pkg.config.textDomain + '-' }))
-    .pipe(gulp.dest('./build/languages/'));
+    .pipe(gulp.dest(path.join(PATH_BUILD_BASE, 'languages')));
 });
 
 /**
