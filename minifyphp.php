@@ -86,10 +86,10 @@ class Tiny_Php {
  * run it from command line with:
  *
  * ```bash
- * $ php ./dev-lib/minifyphp.php ../plus-bootstrap/build/framework/options*.php
+ * $ php ./dev-lib/minifyphp.php ../customize-plus-theme/build/framework/options*.php
  * ```
  */
-$file_glob_path = isset( $argv[1] ) ? $argv[1] : '../plus-bootstrap/build/framework/options*.php';
+$file_glob_path = isset( $argv[1] ) ? $argv[1] : '../customize-plus-theme/build/framework/options*.php';
 
 foreach ( glob( $file_glob_path ) as $filename ) {
 	$file_content = file_get_contents( $filename );
