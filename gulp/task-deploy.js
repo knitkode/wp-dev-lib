@@ -3,19 +3,12 @@
 'use strict';
 
 // @access public
-gulp.task('deploy', ['_deploy-build']);
+gulp.task('deploy', ['_deploy-github']);
 
 // @access private
-gulp.task('_deploy-copy_basic_files', function () {
-  return gulp.src(['./license.txt', './readme.txt'])
-    .pipe(gulp.dest('./build'));
-});
-
-// @access private
-gulp.task('_deploy-build', ['_deploy-copy_basic_files'], function () {
-  return gulp.src('./build/**/*')
-    .pipe($.ghPages({
-      branch: 'production',
-      remote: 'github'
-    }));
+gulp.task('_deploy-github', function (callback) {
+  return require('gh-pages').publish('./build/**/*', {
+    branch: 'production',
+    remote: 'github'
+  }, callback);
 });
