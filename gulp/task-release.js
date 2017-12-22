@@ -48,11 +48,9 @@ gulp.task('_release-readme', function() {
   gulp.src(PATHS.root + 'readme.txt')
     .pipe(gulp.dest(PATHS.build.root))
     .pipe($.readmeToMarkdown({
-      details: false,
       screenshot_ext: ['jpg', 'jpg', 'png'],
       extract: {
-        'changelog': 'CHANGELOG',
-        'Frequently Asked Questions': 'FAQ'
+        'changelog': 'CHANGELOG'
       }
     }))
     // .pipe(gulp.dest(PATHS.src.root)) // let's use a different README on github
