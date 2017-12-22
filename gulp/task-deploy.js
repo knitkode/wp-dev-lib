@@ -7,7 +7,7 @@ gulp.task('deploy', ['_deploy-github']);
 
 // @access private
 gulp.task('_deploy-github', function (callback) {
-  return require('gh-pages').publish('./build/**/*', {
+  return require('gh-pages').publish('build', {
     branch: 'production',
     remote: 'github'
   }, callback);
