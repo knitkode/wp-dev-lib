@@ -46,7 +46,7 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
 // @access private
 gulp.task('_release-readme', function() {
   gulp.src(PATHS.src.root + 'readme.txt')
-    .pipe(gulp.dest(PATH_BUILD_BASE))
+    .pipe(gulp.dest(PATHS.build.root))
     .pipe($.readmeToMarkdown({
       details: false,
       screenshot_ext: ['jpg', 'jpg', 'png'],
@@ -55,15 +55,15 @@ gulp.task('_release-readme', function() {
         'Frequently Asked Questions': 'FAQ'
       }
     }))
-    .pipe(gulp.dest(PATHS.src.root))
-    .pipe(gulp.dest(PATH_BUILD_BASE));
+    // .pipe(gulp.dest(PATHS.src.root)) // let's use a different README on github
+    .pipe(gulp.dest(PATHS.build.root));
 });
 
 // @access private
 gulp.task('_release-assets', function() {
   var pkg = require('../../../package.json');
-  var uiPath = '../../../../ui/' + pkg.name + '/';
-
+  var uiPath = '../../../../ui/' + pkg.config.slug + '/';
+  console.log("uiPath", uiPath)
   gulp.src([
     uiPath + 'banner.svg',
     uiPath + 'banner-*.png',
@@ -72,7 +72,7 @@ gulp.task('_release-assets', function() {
     uiPath + 'screenshot-*.png',
     uiPath + 'screenshot-*.jpg'
   ])
-  .pipe(gulp.dest(PATH_BUILD_BASE + '/assets/'));
+  .pipe(gulp.dest(PATHS.build.root + '/assets/'));
 });
 
 /**
