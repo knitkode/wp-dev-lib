@@ -16,6 +16,6 @@ gulp.task('_deploy-build', ['_deploy-copy_basic_files'], function () {
   return gulp.src('./build/**/*')
     .pipe($.ghPages({
       branch: 'production',
-      origin: 'github'
+      remote: 'github'
     }));
 });
