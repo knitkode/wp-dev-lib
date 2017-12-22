@@ -45,7 +45,7 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
 
 // @access private
 gulp.task('_release-readme', function() {
-  gulp.src(PATHS.src.root + 'readme.txt')
+  gulp.src(PATHS.root + 'readme.txt')
     .pipe(gulp.dest(PATHS.build.root))
     .pipe($.readmeToMarkdown({
       details: false,
@@ -62,8 +62,7 @@ gulp.task('_release-readme', function() {
 // @access private
 gulp.task('_release-assets', function() {
   var pkg = require('../../../package.json');
-  var uiPath = '../../../../ui/' + pkg.config.slug + '/';
-  console.log("uiPath", uiPath)
+  var uiPath = '../ui/' + pkg.config.slug + '/';
   gulp.src([
     uiPath + 'banner.svg',
     uiPath + 'banner-*.png',
