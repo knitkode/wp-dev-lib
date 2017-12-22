@@ -18,7 +18,8 @@ var pathMoFiles = [
 gulp.task('release', $.sequence(
   '_release-replace-words',
   'release-lang',
-  '_release-create-index'
+  '_release-create-index',
+  '_release-readme'
 ));
 
 // @access public
@@ -39,6 +40,20 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
   return gulp.src(pathMoFiles)
     .pipe($.rename({ prefix: pkg.config.textDomain + '-' }))
     .pipe(gulp.dest(path.join(PATH_BUILD_BASE, 'languages')));
+});
+
+// @access private
+gulp.task('_release-readme', function() {
+  gulp.src(path.join(PATHS.src.root, 'readme.txt'))
+  .pipe($.readmeToMarkdown({
+    details: false,
+    screenshot_ext: ['jpg', 'jpg', 'png'],
+    extract: {
+      'changelog': 'CHANGELOG',
+      'Frequently Asked Questions': 'FAQ'
+    }
+  }))
+  .pipe(gulp.dest(PATH_BUILD_BASE));
 });
 
 /**
