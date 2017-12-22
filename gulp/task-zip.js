@@ -8,7 +8,7 @@ var pkg = require('../../../package.json');
 gulp.task('zip', ['_zip-archive', '_zip-last']);
 
 // @access private
-gulp.task('_zip-archive', ['_deploy-copy_basic_files'], function () {
+gulp.task('_zip-archive', function () {
   return gulp.src('./build/**/*')
     .pipe($.zip(pkg.name + '--' + pkg.version + '.zip'))
     .pipe(gulp.dest('../roots/.publish/releases/archive'));
