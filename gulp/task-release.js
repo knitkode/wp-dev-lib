@@ -19,7 +19,8 @@ gulp.task('release', $.sequence(
   '_release-replace-words',
   'release-lang',
   '_release-create-index',
-  '_release-readme'
+  '_release-readme',
+  '_release-assets'
 ));
 
 // @access public
@@ -44,16 +45,34 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
 
 // @access private
 gulp.task('_release-readme', function() {
-  gulp.src(path.join(PATHS.src.root, 'readme.txt'))
-  .pipe($.readmeToMarkdown({
-    details: false,
-    screenshot_ext: ['jpg', 'jpg', 'png'],
-    extract: {
-      'changelog': 'CHANGELOG',
-      'Frequently Asked Questions': 'FAQ'
-    }
-  }))
-  .pipe(gulp.dest(PATH_BUILD_BASE));
+  gulp.src(PATHS.src.root + 'readme.txt')
+    .pipe(gulp.dest(PATH_BUILD_BASE))
+    .pipe($.readmeToMarkdown({
+      details: false,
+      screenshot_ext: ['jpg', 'jpg', 'png'],
+      extract: {
+        'changelog': 'CHANGELOG',
+        'Frequently Asked Questions': 'FAQ'
+      }
+    }))
+    .pipe(gulp.dest(PATHS.src.root))
+    .pipe(gulp.dest(PATH_BUILD_BASE));
+});
+
+// @access private
+gulp.task('_release-assets', function() {
+  var pkg = require('../../../package.json');
+  var uiPath = '../../../../ui/' + pkg.name + '/';
+
+  gulp.src([
+    uiPath + 'banner.svg',
+    uiPath + 'banner-*.png',
+    uiPath + 'icon.svg',
+    uiPath + 'icon-*.png',
+    uiPath + 'screenshot-*.png',
+    uiPath + 'screenshot-*.jpg'
+  ])
+  .pipe(gulp.dest(PATH_BUILD_BASE + '/assets/'));
 });
 
 /**
