@@ -90,6 +90,7 @@ gulp.task('_release-replace-words', function () {
     .pipe($.replace('pkgHomepage', pkg.homepage, options))
     .pipe($.replace('pkgNamePretty', pkg.config.namePretty, options))
     .pipe($.replace('pkgNameShort', pkg.config.nameShort, options))
+    .pipe($.replace('pkgSlug', pkg.config.slug, options))
     .pipe($.replace('pkgName', pkg.name, options))
     .pipe($.replace('pkgDescription', pkg.description, options))
     .pipe($.replace('pkgAuthorName', pkg.author.name, options))
