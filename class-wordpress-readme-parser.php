@@ -6,8 +6,8 @@
  * @link http://git.io/vZ07A Alternative to WordPress-Plugin-Readme-Parser
  * @version 1.1.1
  * @author Weston Ruter <weston@xwp.co> (@westonruter)
- * @copyright Copyright (c) 2013, XWP <https://xwp.co/>
- * @license GPLv2+
+ * @copyright Copyright (c) 2017, XWP <https://xwp.co/>
+ * @license MIT
  */
 
 class WordPress_Readme_Parser {
@@ -32,7 +32,7 @@ class WordPress_Readme_Parser {
 		}
 
 		// Parse metadata
-		$syntax_ok = preg_match( '/^=== (.+?) ===\n(.+?)\n\n(.+?)\n(.+)/s', $this->source, $matches );
+		$syntax_ok = preg_match( '/^=== (.+?) ===\r?\n(.+?)\r?\n\r?\n(.+?)\r?\n(.+)/s', $this->source, $matches );
 		if ( ! $syntax_ok ) {
 			throw new Exception( 'Malformed metadata block' );
 		}
@@ -45,12 +45,12 @@ class WordPress_Readme_Parser {
 				throw new Exception( "Parse error in $metadatum" );
 			}
 			list( $name, $value )  = array_slice( $metadataum_matches, 1, 2 );
-			$this->metadata[ $name ] = $value;
+			$this->metadata[ $name ] = trim( $value );
 		}
 		$this->metadata['Contributors'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Contributors'] ) );
 		$this->metadata['Tags'] = array_filter( preg_split( '/\s*,\s*/', $this->metadata['Tags'] ) );
 
-		$syntax_ok = preg_match_all( '/(?:^|\n)== (.+?) ==\n(.+?)(?=\n== |$)/s', $readme_txt_rest, $section_matches, PREG_SET_ORDER );
+		$syntax_ok = preg_match_all( '/(?:^|\r?\n)== (.+?) ==\r?\n(.+?)(?=\r?\n== |$)/s', $readme_txt_rest, $section_matches, PREG_SET_ORDER );
 		if ( ! $syntax_ok ) {
 			throw new Exception( 'Failed to parse sections from readme.txt' );
 		}
@@ -62,7 +62,7 @@ class WordPress_Readme_Parser {
 			$subsections = array();
 
 			// Check if there is front matter
-			if ( preg_match( '/^(\s*[^=].+?)(?=\n=|$)(.*$)/s', $body, $matches ) ) {
+			if ( preg_match( '/^(\s*[^=].+?)(?=\r?\n=|$)(.*$)/s', $body, $matches ) ) {
 				$body = $matches[1];
 				$subsection_search_area = $matches[2];
 			} else {
@@ -71,7 +71,7 @@ class WordPress_Readme_Parser {
 			}
 
 			// Parse subsections
-			if ( preg_match_all( '/(?:^|\n)= (.+?) =\n(.+?)(?=\n= |$)/s', $subsection_search_area, $subsection_matches, PREG_SET_ORDER ) ) {
+			if ( preg_match_all( '/(?:^|\r?\n)= (.+?) =\r?\n(.+?)(?=\r?\n= |$)/s', $subsection_search_area, $subsection_matches, PREG_SET_ORDER ) ) {
 				foreach ( $subsection_matches as $subsection_match ) {
 					array_shift( $subsection_match );
 					$subsections[] = array(
@@ -101,7 +101,7 @@ class WordPress_Readme_Parser {
 			);
 			// Convert <pre lang="php"> into GitHub-flavored ```php markdown blocks
 			$body = preg_replace(
-				'#\n?<pre lang="(\w+)">\n?(.+?)\n?</pre>\n?#s',
+				'#\n?<pre lang="(\w+)">\r?\n?(.+?)\r?\n?</pre>\r?\n?#s',
 				"\n" . '```$1' . "\n" . '$2' . "\n" . '```' . "\n",
 				$body
 			);
@@ -113,7 +113,7 @@ class WordPress_Readme_Parser {
 			'Screenshots' => function ( $body ) use ( $that, $params ) {
 				$body = trim( $body );
 				$new_body = '';
-				if ( ! preg_match_all( '/^\d+\. (.+?)$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
+				if ( ! preg_match_all( '/^\d+\. (.+?)\s*$/m', $body, $screenshot_matches, PREG_SET_ORDER ) ) {
 					throw new Exception( 'Malformed screenshot section' );
 				}
 				foreach ( $screenshot_matches as $i => $screenshot_match ) {
@@ -142,7 +142,7 @@ class WordPress_Readme_Parser {
 
 		// Format metadata
 		$formatted_metadata = array_filter( $this->metadata );
-		$formatted_metadata['Contributors'] = join(
+		$formatted_metadata['Contributors'] = implode(
 			', ',
 			array_map(
 				function ( $contributor ) {
@@ -154,11 +154,11 @@ class WordPress_Readme_Parser {
 			)
 		);
 		if ( ! empty( $this->metadata['Tags'] ) ) {
-			$formatted_metadata['Tags'] = join(
+			$formatted_metadata['Tags'] = implode(
 				', ',
 				array_map(
 					function ( $tag ) {
-						return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%1$s)', $tag );
+						return sprintf( '[%1$s](https://wordpress.org/plugins/tags/%2$s)', $tag, str_replace( ' ', '-', $tag ) );
 					},
 					$this->metadata['Tags']
 				)
@@ -221,7 +221,7 @@ class WordPress_Readme_Parser {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s.svg)](%1$s) ', $url );
 				}
 				if ( 'david_dev_url' === $badge ) {
-					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s#info=devDependencies) ', $url );
+					$badge_md .= sprintf( '[![devDependency Status](%1$s/dev-status.svg)](%1$s?type=dev) ', $url );
 				}
 				if ( 'gemnasium_url' === $badge ) {
 					$badge_md .= sprintf( '[![Dependency Status](%1$s)](%2$s) ', $params['gemnasium_badge_src'], $url );

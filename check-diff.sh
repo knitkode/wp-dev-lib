@@ -36,6 +36,7 @@ function set_environment_variables {
 	PROJECT_SLUG=${PROJECT_SLUG:-$( basename "$PROJECT_DIR" | sed 's/^wp-//' )}
 	PATH_INCLUDES=${PATH_INCLUDES:-./}
 	PATH_EXCLUDES_PATTERN=${PATH_EXCLUDES_PATTERN:-'^(.*/)?(vendor|bower_components|node_modules)/.*'}
+	DEFAULT_BASE_BRANCH=${DEFAULT_BASE_BRANCH:-master}
 
 	if [ -z "$PROJECT_TYPE" ]; then
 		if [ -e style.css ]; then
@@ -57,11 +58,22 @@ function set_environment_variables {
 
 	if [ "$TRAVIS" == true ]; then
 		if [[ "$TRAVIS_PULL_REQUEST" != 'false' ]]; then
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_BRANCH}
+			DIFF_BASE_BRANCH=$TRAVIS_BRANCH
 		else
-			DIFF_BASE=${DIFF_BASE:-$TRAVIS_COMMIT^}
+			DIFF_BASE_BRANCH=$DEFAULT_BASE_BRANCH
 		fi
+
+		# Make sure the remote branch is fetched.
+		if [[ -z "$DIFF_BASE" ]] && ! git rev-parse --verify --quiet "$DIFF_BASE_BRANCH" > /dev/null; then
+			git fetch origin "$DIFF_BASE_BRANCH"
+			git branch "$DIFF_BASE_BRANCH" FETCH_HEAD
+		fi
+
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
 		DIFF_HEAD=${DIFF_HEAD:-$TRAVIS_COMMIT}
+	elif [[ ! -z "${GITLAB_CI}" ]]; then
+		DIFF_BASE=${DIFF_BASE:-$DIFF_BASE_BRANCH}
+		DIFF_HEAD=${DIFF_HEAD:-$CI_COMMIT_SHA}
 	else
 		DIFF_BASE=${DIFF_BASE:-HEAD}
 		DIFF_HEAD=${DIFF_HEAD:-WORKING}
@@ -96,7 +108,14 @@ function set_environment_variables {
 	done
 
 	PHPCS_PHAR_URL=https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
-	PHPCS_RULESET_FILE=$( upsearch phpcs.ruleset.xml )
+	if [ -z "$PHPCS_RULESET_FILE" ]; then
+		for SEARCHED_PHPCS_RULESET_FILE in phpcs.xml phpcs.xml.dist phpcs.xml phpcs.ruleset.xml; do
+			PHPCS_RULESET_FILE="$( upsearch $SEARCHED_PHPCS_RULESET_FILE)"
+			if [ ! -z "$PHPCS_RULESET_FILE" ]; then
+				break
+			fi
+		done
+	fi
 	PHPCS_IGNORE=${PHPCS_IGNORE:-'vendor/*'}
 	PHPCS_GIT_TREE=${PHPCS_GIT_TREE:-master}
 	PHPCS_GITHUB_SRC=${PHPCS_GITHUB_SRC:-squizlabs/PHP_CodeSniffer}
@@ -133,6 +152,8 @@ function set_environment_variables {
 	VERBOSE=${VERBOSE:-0}
 	CODECEPTION_CHECK=${CODECEPTION_CHECK:-1}
 	VAGRANTFILE=$( upsearch 'Vagrantfile' git_boundless )
+	DOCKERFILE=$( upsearch 'docker-compose.yml' git_boundless )
+	DOCKER_PHPUNIT_BIN=${DOCKER_PHPUNIT_BIN:-bin/phpunit}
 
 	if [ -z "$JSCS_CONFIG" ]; then
 		JSCS_CONFIG="$( upsearch .jscsrc )"
@@ -221,6 +242,7 @@ function set_environment_variables {
 		DIFF_ARGS="$DIFF_BASE...$DIFF_HEAD"
 	fi
 
+	echo "git diff $DIFF_ARGS"
 	if [ "$CHECK_SCOPE" == 'patches' ]; then
 		git diff --diff-filter=AM --no-prefix --unified=0 $DIFF_ARGS -- $PATH_INCLUDES | php "$DEV_LIB_PATH/diff-tools/parse-diff-ranges.php" > "$TEMP_DIRECTORY/paths-scope"
 	elif [ "$CHECK_SCOPE" == 'changed-files' ]; then
@@ -230,17 +252,17 @@ function set_environment_variables {
 	fi
 
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/paths-scope" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-paths-scope"
+		cat "$TEMP_DIRECTORY/paths-scope" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/excluded-paths-scope"
 		mv "$TEMP_DIRECTORY/excluded-paths-scope" "$TEMP_DIRECTORY/paths-scope"
 	fi
 
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.php(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-php"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.jsx?(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-js"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(css|scss)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-scss"
-	cat "$TEMP_DIRECTORY/paths-scope" | grep -E '\.(xml|svg|xml.dist)(:|$)' | cat - > "$TEMP_DIRECTORY/paths-scope-xml"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.php(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-php"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.jsx?(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-js"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(css|scss)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-scss"
+	cat "$TEMP_DIRECTORY/paths-scope" | { grep -E '\.(xml|svg|xml.dist)(:|$)' || true; } > "$TEMP_DIRECTORY/paths-scope-xml"
 
 	# Gather the proper states of files to run through linting (this won't apply to phpunit)
-	if [ "$DIFF_HEAD" != 'working' ]; then
+	if [ "$DIFF_HEAD" != 'WORKING' ]; then
 		LINTING_DIRECTORY="$(realpath $TEMP_DIRECTORY)/index"
 		mkdir -p "$LINTING_DIRECTORY"
 
@@ -274,12 +296,16 @@ function set_environment_variables {
 		done
 
 		# Make sure linter configs get copied linting directory since upsearch is relative.
-		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.ruleset.xml ruleset.xml; do
+		for linter_file in .jshintrc .jshintignore .jscsrc .jscs.json .eslintignore .eslintrc phpcs.xml phpcs.xml.dist phpcs.ruleset.xml ruleset.xml; do
 			if git ls-files "$linter_file" --error-unmatch > /dev/null 2>&1; then
-				git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
+				if [ -L $linter_file ]; then
+					ln -fs $(git show :"$linter_file") "$LINTING_DIRECTORY/$linter_file"
+				else
+					git show :"$linter_file" > "$LINTING_DIRECTORY/$linter_file";
+				fi
 			fi
 		done
-		if [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
+		if [ ! -z "$JSHINT_IGNORE" ] && [ -e "$LINTING_DIRECTORY/$JSHINT_IGNORE" ]; then
 			JSHINT_IGNORE="$( realpath "$LINTING_DIRECTORY/$JSHINT_IGNORE" )"
 		fi
 
@@ -298,6 +324,11 @@ function set_environment_variables {
 		LINTING_DIRECTORY="$PROJECT_DIR"
 	fi
 
+	# Make sure the Node bin is on the PATH.
+	if [ -e package.json ] && command -v npm >/dev/null; then
+		PATH="$( npm bin ):$PATH"
+	fi
+
 	if [ -L "$JSHINT_IGNORE" ]; then
 		echo "Warning: .jshintignore may not work as expected as symlink."
 	fi
@@ -309,6 +340,14 @@ function set_environment_variables {
 	if [ ! -z "$PHPCS_RULESET_FILE" ]; then PHPCS_RULESET_FILE=$(realpath "$PHPCS_RULESET_FILE"); fi
 	if [ ! -z "$CODECEPTION_CONFIG" ]; then CODECEPTION_CONFIG=$(realpath "$CODECEPTION_CONFIG"); fi
 	if [ ! -z "$VAGRANTFILE" ]; then VAGRANTFILE=$(realpath "$VAGRANTFILE"); fi
+	if [ ! -z "$DOCKERFILE" ]; then DOCKERFILE=$(realpath "$DOCKERFILE"); fi
+	if [ -z "$PHPUNIT_CONFIG" ] && ( [ -e phpunit.xml ] || [ -e phpunit.xml.dist ] ); then
+		if [ -e phpunit.xml ]; then
+			PHPUNIT_CONFIG=phpunit.xml
+		else
+			PHPUNIT_CONFIG=phpunit.xml.dist
+		fi
+	fi
 	# Note: PHPUNIT_CONFIG must be a relative path for the sake of running in Vagrant
 
 	return 0
@@ -375,15 +414,36 @@ function install_tools {
 	fi
 
 	# Install Node packages.
-	if [ -e package.json ] && [ ! -e node_modules ]; then
+	if [ -e package.json ] && [ $( ls node_modules | wc -l ) == 0 ]; then
 		npm install
+	fi
+
+	# Install Composer
+	if [ -e composer.json ] && check_should_execute 'composer' && [ $( ls vendor | wc -l ) == 0 ]; then
+		if ! command -v composer >/dev/null 2>&1; then
+			(
+				cd "$TEMP_TOOL_PATH"
+				download "http://getcomposer.org/installer" composer-installer.php
+				php composer-installer.php
+				mv composer.phar composer
+				chmod +x composer
+			)
+		fi
+
+		composer install
+	fi
+
+	# Make sure the Composer bin is on the PATH.
+	if [ -e composer.json ] && command -v composer >/dev/null 2>&1 && check_should_execute 'composer'; then
+		PATH="$( composer config bin-dir --absolute ):$PATH"
 	fi
 
 	# Install PHP tools.
 	if [ -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
-		if [ -z "$( type -t phpunit )" ] && check_should_execute 'phpunit'; then
-			echo "Downloading PHPUnit phar"
-			download https://phar.phpunit.de/phpunit.phar "$TEMP_TOOL_PATH/phpunit"
+		if check_should_execute 'phpunit' && ! command -v phpunit >/dev/null 2>&1; then
+			PHPUNIT_VERSION=${PHPUNIT_VERSION:-5.7}
+			echo "Downloading PHPUnit $PHPUNIT_VERSION phar"
+			download https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar "$TEMP_TOOL_PATH/phpunit"
 			chmod +x "$TEMP_TOOL_PATH/phpunit"
 		fi
 
@@ -392,7 +452,7 @@ function install_tools {
 		elif [ -z "$WPCS_STANDARD" ]; then
 			echo "Skipping PHPCS since WPCS_STANDARD (and PHPCS_RULESET_FILE) is empty." 1>&2
 		else
-			if [ "$( type -t phpcs )" == '' ]; then
+			if ! command -v phpcs >/dev/null 2>&1; then
 				echo "Downloading PHPCS phar"
 				download "$PHPCS_PHAR_URL" "$TEMP_TOOL_PATH/phpcs"
 				chmod +x "$TEMP_TOOL_PATH/phpcs"
@@ -414,37 +474,37 @@ function install_tools {
 	if [ -s "$TEMP_DIRECTORY/paths-scope-js" ]; then
 
 		# Install Grunt
-		if [ "$( type -t grunt )" == '' ] && check_should_execute 'grunt'; then
+		if check_should_execute 'grunt' && ! command -v grunt >/dev/null; then
 			echo "Installing Grunt"
 			if ! npm install -g grunt-cli 2>/dev/null; then
-				echo "Failed to install grunt-cli (try manually doing: sudo npm install -g grunt-cli), so skipping grunt-cli"
+				echo "Failed to install grunt (try installing as a local package via 'npm install --save-dev grunt-cli'), so skipping grunt"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,grunt"
 			fi
 		fi
 
 		# Install JSHint
-		if [ "$( type -t jshint )" == '' ] && check_should_execute 'jshint'; then
+		if check_should_execute 'jshint' && ! command -v jscs >/dev/null; then
 			echo "Installing JSHint"
 			if ! npm install -g jshint 2>/dev/null; then
-				echo "Failed to install jshint (try manually doing: sudo npm install -g jshint), so skipping jshint"
+				echo "Failed to install jshint (try installing as a local package via 'npm install --save-dev jshint'), so skipping jshint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,jshint"
 			fi
 		fi
 
 		# Install jscs
-		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && [ "$( type -t jscs )" == '' ] && check_should_execute 'jscs'; then
-			echo "JSCS"
+		if [ -n "$JSCS_CONFIG" ] && [ -e "$JSCS_CONFIG" ] && check_should_execute 'jscs' && ! command -v jscs >/dev/null 2>&1; then
+			echo "Installing JSCS"
 			if ! npm install -g jscs 2>/dev/null; then
-				echo "Failed to install jscs (try manually doing: sudo npm install -g jscs), so skipping jscs"
+				echo "Failed to install jscs (try installing as a local package via 'npm install --save-dev jscs'), so skipping jscs"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,jscs"
 			fi
 		fi
 
 		# Install ESLint
-		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ ! -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
+		if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && check_should_execute 'eslint' && ! command -v eslint >/dev/null 2>&1; then
 			echo "Installing ESLint"
 			if ! npm install -g eslint 2>/dev/null; then
-				echo "Failed to install eslint (try manually doing: sudo npm install -g eslint), so skipping eslint"
+				echo "Failed to install eslint (try installing as a local package via 'npm install --save-dev eslint'), so skipping eslint"
 				DEV_LIB_SKIP="$DEV_LIB_SKIP,eslint"
 			fi
 		fi
@@ -456,21 +516,6 @@ function install_tools {
 			fi
 		fi
 	fi
-
-	# Install Composer
-	if [ -e composer.json ] && check_should_execute 'composer'; then
-		if [ "$( type -t composer )" == '' ]; then
-			(
-				cd "$TEMP_TOOL_PATH"
-				download "http://getcomposer.org/installer" composer-installer.php
-				php composer-installer.php
-				mv composer.phar composer
-				chmod +x composer
-			)
-		fi
-
-		composer install
-	fi
 }
 
 ## Begin functions for phpunit ###########################
@@ -480,7 +525,7 @@ function install_wp {
 	if [ -d "$WP_CORE_DIR" ]; then
 		return 0
 	fi
-	if [ "$( type -t svn )" == '' ]; then
+	if ! command -v svn >/dev/null 2>&1; then
 		echo "install_wp failure: svn is not installed"
 		return 1
 	fi
@@ -523,7 +568,7 @@ function install_test_suite {
 }
 
 function install_db {
-	if [ "$( type -t mysqladmin )" == '' ]; then
+	if ! command -v mysqladmin >/dev/null 2>&1; then
 		echo "install_db failure: mysqladmin is not present"
 		return 1
 	fi
@@ -555,6 +600,15 @@ function install_db {
 	echo "DB $DB_NAME created"
 }
 
+function find_phpunit_dirs {
+	find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; > $TEMP_DIRECTORY/phpunitdirs
+	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
+		cat "$TEMP_DIRECTORY/phpunitdirs" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-phpunitdirs"
+		mv "$TEMP_DIRECTORY/included-phpunitdirs" "$TEMP_DIRECTORY/phpunitdirs"
+	fi
+	cat $TEMP_DIRECTORY/phpunitdirs
+}
+
 function run_phpunit_local {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-php" ]; then
 		return
@@ -569,18 +623,24 @@ function run_phpunit_local {
 
 	(
 		echo "## phpunit"
-		if [ -n "$( type -t phpunit )" ] && [ -n "$WP_TESTS_DIR" ]; then
+		if command -v phpunit >/dev/null 2>&1 && [ -n "$WP_TESTS_DIR" ]; then
 			if [ -n "$PHPUNIT_CONFIG" ]; then
 				phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
 			else
-				for project in $( find $PATH_INCLUDES -name 'phpunit.xml*' ! -path '*/vendor/*' -name 'phpunit.xml*' -exec dirname {} \; ); do
+				for project in $( find_phpunit_dirs ); do
 					(
 						cd "$project"
 						phpunit
 					)
 				done
 			fi
-		elif [ "$USER" != 'vagrant' ]; then
+		elif [ ! -z "$DOCKERFILE" ] && [ ! -z "$DOCKER_PHPUNIT_BIN" ]; then
+			if [ -n "$PHPUNIT_CONFIG" ]; then
+				"$DOCKER_PHPUNIT_BIN" -c "$PHPUNIT_CONFIG"
+			else
+				echo "Failed to run phpunit inside Docker"
+			fi
+		elif [ "$USER" != 'vagrant' ] && command -v vagrant >/dev/null 2>&1; then
 
 			# Check if we're in Vagrant
 			if [ ! -z "$VAGRANTFILE" ]; then
@@ -595,8 +655,9 @@ function run_phpunit_local {
 			fi
 
 			if [ ! -z "$ABSOLUTE_VAGRANT_PATH" ]; then
+				VAGRANT_DEV_LIB_PATH=$ABSOLUTE_VAGRANT_PATH${DEV_LIB_PATH:${#PROJECT_DIR}}
 				echo "Running phpunit in Vagrant"
-				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && dev-lib/pre-commit"
+				vagrant ssh -c "cd $ABSOLUTE_VAGRANT_PATH && export DIFF_BASE=$DIFF_BASE && export DIFF_HEAD=$DIFF_HEAD && export DEV_LIB_ONLY=phpunit && $VAGRANT_DEV_LIB_PATH/pre-commit"
 			elif command -v vassh >/dev/null 2>&1; then
 				echo "Running phpunit in vagrant via vassh..."
 				vassh phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi )
@@ -614,7 +675,7 @@ function run_phpunit_travisci {
 		return
 	fi
 
-	if [ "$( type -t phpunit )" == '' ]; then
+	if ! command -v phpunit >/dev/null 2>&1; then
 		echo "Skipping PHPUnit because phpunit tool not installed"
 		return
 	fi
@@ -623,8 +684,8 @@ function run_phpunit_travisci {
 		echo "Skipping PHPUnit as requested via DEV_LIB_SKIP / DEV_LIB_ONLY"
 		return
 	fi
-	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ]; then
-		echo "Skipping PHPUnit since only applicable to site or plugin project types"
+	if [ "$PROJECT_TYPE" != plugin ] && [ "$PROJECT_TYPE" != site ] && [ "$PROJECT_TYPE" != theme ]; then
+		echo "Skipping PHPUnit since only applicable to site, theme or plugin project types"
 		return
 	fi
 	echo
@@ -657,6 +718,25 @@ function run_phpunit_travisci {
 		cd "$INSTALL_PATH"
 
 		echo "Location: $INSTALL_PATH"
+	elif [ "$PROJECT_TYPE" == theme ]; then
+		INSTALL_PATH="$WP_CORE_DIR/src/wp-content/themes/$PROJECT_SLUG"
+
+		# Rsync the files into the right location
+		mkdir -p "$INSTALL_PATH"
+		rsync -a $(verbose_arg) --exclude .git/hooks --delete "$PROJECT_DIR/" "$INSTALL_PATH/"
+		cd "$INSTALL_PATH"
+
+		# Clone the theme dependencies (i.e. plugins) into the plugins directory
+		if [ ! -z "$THEME_GIT_PLUGIN_DEPENDENCIES" ]; then
+			IFS=',' read -r -a dependencies <<< "$THEME_GIT_PLUGIN_DEPENDENCIES"
+			for dep in "${dependencies[@]}"
+			do
+				filename=$(basename "$dep")
+				git clone "$dep" "$WP_CORE_DIR/src/wp-content/plugins/${filename%.*}"
+			done
+		fi
+
+		echo "Location: $INSTALL_PATH"
 	elif [ "$PROJECT_TYPE" == site ]; then
 		cd "$PROJECT_DIR"
 	fi
@@ -665,19 +745,19 @@ function run_phpunit_travisci {
 		after_wp_install
 	fi
 
-	# Run the tests
-	if [ -n "$PHPUNIT_CONFIG" ] || [ -e phpunit.xml* ]; then
-		PHPUNIT_COVERAGE_DIR=$(pwd)
-		phpunit $(verbose_arg) $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) --stop-on-failure $(coverage_clover)
+	INITIAL_DIR=$(pwd)
+	if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then
+		phpunit $( if [ -n "$TRAVIS_PHPUNIT_CONFIG" ]; then echo -c "$TRAVIS_PHPUNIT_CONFIG"; fi ) $(coverage_clover)
+	elif [ -n "$PHPUNIT_CONFIG" ]; then
+		phpunit $( if [ -n "$PHPUNIT_CONFIG" ]; then echo -c "$PHPUNIT_CONFIG"; fi ) $(coverage_clover)
+	else
+		for project in $( find_phpunit_dirs ); do
+			(
+				cd "$project"
+				phpunit --stop-on-failure $( if [ "$project" == "$INITIAL_DIR" ]; then coverage_clover; fi )
+			)
+		done
 	fi
-
-	for nested_project in $( find $PATH_INCLUDES -mindepth 2 ! -path '*/dev-lib/*' ! -path '*/vendor/*' -name 'phpunit.xml*' | sed 's:/[^/]*$::' ); do
-		(
-			cd "$nested_project"
-			echo "Running PHPUnit in nested project: $nested_project"
-			phpunit --stop-on-failure
-		)
-	done
 	cd "$PROJECT_DIR"
 }
 
@@ -702,7 +782,7 @@ function lint_js_files {
 	fi
 
 	# Run JSHint.
-	if [ -n "$JSHINT_CONFIG" ] && [ "$( type -t jshint )" != '' ] && check_should_execute 'jshint'; then
+	if [ -n "$JSHINT_CONFIG" ] && check_should_execute 'jshint'; then
 		(
 			echo "## JSHint"
 			cd "$LINTING_DIRECTORY"
@@ -718,7 +798,7 @@ function lint_js_files {
 	fi
 
 	# Run JSCS.
-	if [ -n "$JSCS_CONFIG" ] && [ "$( type -t jscs )" != '' ] && check_should_execute 'jscs'; then
+	if [ -n "$JSCS_CONFIG" ] && check_should_execute 'jscs'; then
 		(
 			echo "## JSCS"
 			cd "$LINTING_DIRECTORY"
@@ -734,11 +814,11 @@ function lint_js_files {
 	fi
 
 	# Run ESLint.
-	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && [ -e "$(npm bin)/eslint" ] && check_should_execute 'eslint'; then
+	if [ -n "$ESLINT_CONFIG" ] && [ -e "$ESLINT_CONFIG" ] && check_should_execute 'eslint'; then
 		(
 			echo "## ESLint"
 			cd "$LINTING_DIRECTORY"
-			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs "$(npm bin)/eslint" --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
+			if ! cat "$TEMP_DIRECTORY/paths-scope-js" | remove_diff_range | xargs eslint --max-warnings=-1 --quiet --format=compact --config="$ESLINT_CONFIG" --output-file "$TEMP_DIRECTORY/eslint-report"; then
 				if [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/eslint-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-js" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
@@ -754,6 +834,7 @@ function lint_js_files {
 	fi
 }
 
+# @todo: This is wrong, as we should be doing `npm test` instead of calling `grunt qunit` directly.
 function run_qunit {
 	if [ ! -s "$TEMP_DIRECTORY/paths-scope-js" ] || ! check_should_execute 'grunt'; then
 		return
@@ -761,8 +842,8 @@ function run_qunit {
 
 	find $PATH_INCLUDES -name Gruntfile.js > "$TEMP_DIRECTORY/gruntfiles"
 	if [ ! -z "$PATH_EXCLUDES_PATTERN" ]; then
-		cat "$TEMP_DIRECTORY/gruntfiles" | grep -E -v "$PATH_EXCLUDES_PATTERN" | cat - > "$TEMP_DIRECTORY/excluded-gruntfiles"
-		mv "$TEMP_DIRECTORY/excluded-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
+		cat "$TEMP_DIRECTORY/gruntfiles" | { grep -E -v "$PATH_EXCLUDES_PATTERN" || true; } > "$TEMP_DIRECTORY/included-gruntfiles"
+		mv "$TEMP_DIRECTORY/included-gruntfiles" "$TEMP_DIRECTORY/gruntfiles"
 	fi
 	if [ ! -s "$TEMP_DIRECTORY/gruntfiles" ]; then
 		return
@@ -783,7 +864,11 @@ function run_qunit {
 			npm install
 		fi
 
-		grunt qunit
+		if [ -e "$(npm bin)/grunt" ]; then
+			$(npm bin)/grunt qunit
+		else
+			grunt qunit
+		fi
 
 		cd - /dev/null
 	done
@@ -821,12 +906,14 @@ function lint_php_files {
 	fi
 
 	# Check PHP_CodeSniffer WordPress-Coding-Standards.
-	if [ "$( type -t phpcs )" != '' ] && ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
+	if ( [ -n "$WPCS_STANDARD" ] || [ -n "$PHPCS_RULESET_FILE" ] ) && check_should_execute 'phpcs'; then
 		(
 			echo "## PHP_CodeSniffer"
 			cd "$LINTING_DIRECTORY"
 			if ! cat "$TEMP_DIRECTORY/paths-scope-php" | remove_diff_range | xargs phpcs -s --report-emacs="$TEMP_DIRECTORY/phpcs-report" --standard="$( if [ ! -z "$PHPCS_RULESET_FILE" ]; then echo "$PHPCS_RULESET_FILE"; else echo "$WPCS_STANDARD"; fi )" $( if [ -n "$PHPCS_IGNORE" ]; then echo --ignore="$PHPCS_IGNORE"; fi ); then
-				if [ "$CHECK_SCOPE" == 'patches' ]; then
+				if [ ! -s "$TEMP_DIRECTORY/phpcs-report" ]; then
+					return 1
+				elif [ "$CHECK_SCOPE" == 'patches' ]; then
 					cat "$TEMP_DIRECTORY/phpcs-report" | php "$DEV_LIB_PATH/diff-tools/filter-report-for-patch-ranges.php" "$TEMP_DIRECTORY/paths-scope-php" | cut -c$( expr ${#LINTING_DIRECTORY} + 2 )-
 					phpcs_status="${PIPESTATUS[1]}"
 					if [[ $phpcs_status != 0 ]]; then
