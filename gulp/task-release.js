@@ -48,19 +48,13 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
 gulp.task('_release-readme', function() {
   gulp.src(PATHS.root + 'readme.txt')
     .pipe(gulp.dest(PATHS.build.root))
-    .pipe(readmeToMarkdown({
-      screenshot_ext: ['jpg', 'jpg', 'png'],
-      extract: {
-        'changelog': 'CHANGELOG'
-      }
-    }))
+    .pipe(readmeToMarkdown(PLUGINS.readmeToMarkdown))
     // .pipe(gulp.dest(PATHS.src.root)) // let's use a different README on github
     .pipe(gulp.dest(PATHS.build.root));
 });
 
 // @access private
 gulp.task('_release-assets', function() {
-  var pkg = require('../../../package.json');
   var uiPath = '../ui/' + pkg.config.slug + '/';
   gulp.src([
     uiPath + 'banner.svg',
@@ -80,7 +74,6 @@ gulp.task('_release-assets', function() {
  */
 gulp.task('_release-replace-words', function () {
   var options = { skipBinary: true };
-  var pkg = require('../../../package.json');
   var pkgConfigEndYear = (new Date().getFullYear() > pkg.config.startYear) ? new Date().getFullYear() : '';
   var tags = pkg.config.tags || [];
   return gulp.src([

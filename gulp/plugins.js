@@ -90,5 +90,11 @@ module.exports = {
       unsafe: true // --compress unsafe=true
     }
     // reserveDomprops: true // --reserve-domprops
+  },
+  readmeToMarkdown: {
+    screenshot_ext: ['jpg', 'jpg', 'png'],
+    // extract: {
+    //   'changelog': 'CHANGELOG'
+    // }
   }
 };
