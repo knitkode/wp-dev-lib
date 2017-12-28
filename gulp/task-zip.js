@@ -4,9 +4,10 @@
 
 var pkg = require('../../../package.json');
 var del = require('del');
+var sequence = require('gulp-sequence');
 
 // @access public
-gulp.task('zip', $.sequence('_zip-preclean', ['_zip-archive', '_zip-last']));
+gulp.task('zip', sequence('_zip-preclean', ['_zip-archive', '_zip-last']));
 
 
 // @access private

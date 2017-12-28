@@ -2,8 +2,10 @@
 /* jshint node: true */
 'use strict';
 
+var sequence = require('gulp-sequence');
+
 // @access public
-gulp.task('all', $.sequence(
+gulp.task('all', sequence(
   '_all-set-dist',
   'release-clean',
   'build',
@@ -13,7 +15,7 @@ gulp.task('all', $.sequence(
 ));
 
 // @access private
-gulp.task('_all-set-dist', function (cb) {
+gulp.task('_all-set-dist', function (callback) {
   global.CONFIG.isDist = true;
-  cb();
+  callback();
 });

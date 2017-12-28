@@ -9,13 +9,14 @@ var fs = require('fs');
 var path = require('path');
 var folders = require('./util-get-folders');
 var del = require('del');
+var sequence = require('gulp-sequence');
 var pathMoFiles = [
   path.join(PATH_BUILD_BASE, 'languages', '/*.mo'),
   path.join('!' + PATH_BUILD_BASE, 'languages', pkg.config.textDomain + '-*.mo' )
 ];
 
 // @access public
-gulp.task('release', $.sequence(
+gulp.task('release', sequence(
   '_release-replace-words',
   'release-lang',
   '_release-create-index',
@@ -34,7 +35,7 @@ gulp.task('release-lang', ['_release-lang-mo_rename'], function () {
 });
 
 // @access private
-gulp.task('_release-lang-prepare', ['_release-replace-words'], $.sequence('grunt-lang'));
+gulp.task('_release-lang-prepare', ['_release-replace-words'], sequence('grunt-lang'));
 
 // @access private
 gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
