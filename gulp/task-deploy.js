@@ -8,7 +8,7 @@ const extend = require('extend');
 gulp.task('deploy', ['_deploy-github']);
 
 // @access private
-gulp.task('_deploy-github', function () {
+gulp.task('_deploy-github', function (callback) {
   return ghPages.publish(PATHS.build.root, extend({
     remote: 'github'
   }, pkg.config.deployGithub || {}), callback);
