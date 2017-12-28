@@ -1,8 +1,5 @@
-/* global gulp, $ */
-/* jshint node: true */
-'use strict';
-
-var sequence = require('gulp-sequence');
+const gulp = require('gulp');
+const sequence = require('gulp-sequence');
 
 // @access public
 gulp.task('all', sequence(

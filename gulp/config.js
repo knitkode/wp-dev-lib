@@ -1,6 +1,3 @@
-/* jshint node: true */
-'use strict';
-
 /**
  * Config informations
  * @type {Object}

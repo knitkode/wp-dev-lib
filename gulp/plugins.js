@@ -1,6 +1,3 @@
-/* jshint node: true */
-'use strict';
-
 /**
  * Gulp Plugins shared options
  * @type {Object}

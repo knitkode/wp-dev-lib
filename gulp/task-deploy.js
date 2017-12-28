@@ -1,9 +1,6 @@
-/* global gulp, $ */
-/* jshint node: true */
-'use strict';
-
-var PATHS = global.PATHS;
-var pkg = require('../../../package.json');
+const PATHS = global.PATHS;
+const pkg = require('../../../package.json');
+const gulp = require('gulp');
 const ghPages = require('gh-pages');
 const extend = require('extend');
 

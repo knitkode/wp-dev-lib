@@ -1,7 +1,3 @@
-/* global gulp, $ */
-/* jshint node: true */
-'use strict';
-
 var PATHS = global.PATHS;
 var PATH_BUILD_BASE = PATHS.build.root || './build';
 var pkg = require('../../../package.json');
@@ -9,7 +5,11 @@ var fs = require('fs');
 var path = require('path');
 var folders = require('./util-get-folders');
 var del = require('del');
+const gulp = require('gulp');
 var sequence = require('gulp-sequence');
+var replace = require('gulp-replace');
+var rename = require('gulp-rename');
+var readmeToMarkdown = require('gulp-readme-to-markdown');
 var pathMoFiles = [
   path.join(PATH_BUILD_BASE, 'languages', '/*.mo'),
   path.join('!' + PATH_BUILD_BASE, 'languages', pkg.config.textDomain + '-*.mo' )
@@ -40,7 +40,7 @@ gulp.task('_release-lang-prepare', ['_release-replace-words'], sequence('grunt-l
 // @access private
 gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
   return gulp.src(pathMoFiles)
-    .pipe($.rename({ prefix: pkg.config.textDomain + '-' }))
+    .pipe(rename({ prefix: pkg.config.textDomain + '-' }))
     .pipe(gulp.dest(path.join(PATH_BUILD_BASE, 'languages')));
 });
 
@@ -48,7 +48,7 @@ gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
 gulp.task('_release-readme', function() {
   gulp.src(PATHS.root + 'readme.txt')
     .pipe(gulp.dest(PATHS.build.root))
-    .pipe($.readmeToMarkdown({
+    .pipe(readmeToMarkdown({
       screenshot_ext: ['jpg', 'jpg', 'png'],
       extract: {
         'changelog': 'CHANGELOG'
@@ -87,25 +87,25 @@ gulp.task('_release-replace-words', function () {
       PATHS.build.root + '/**/*.*',
       '!' + PATHS.build.root + '/**/vendor/**.*'
     ], { base: PATHS.build.root })
-    .pipe($.replace('pkgVersion', pkg.version, options))
-    .pipe($.replace('pkgHomepage', pkg.homepage, options))
-    .pipe($.replace('pkgNamePretty', pkg.config.namePretty, options))
-    .pipe($.replace('pkgNameShort', pkg.config.nameShort, options))
-    .pipe($.replace('pkgSlug', pkg.config.slug, options))
-    .pipe($.replace('pkgName', pkg.name, options))
-    .pipe($.replace('pkgDescription', pkg.description, options))
-    .pipe($.replace('pkgAuthorName', pkg.author.name, options))
-    .pipe($.replace('pkgAuthorEmail', pkg.author.email, options))
-    .pipe($.replace('pkgAuthorUrl', pkg.author.url, options))
-    .pipe($.replace('pkgLicense', pkg.license, options))
-    .pipe($.replace('pkgLicenseType', pkg.license.type, options))
-    .pipe($.replace('pkgLicenseUrl', pkg.license.url, options))
-    .pipe($.replace('pkgConfigTags', tags.join(', '), options))
-    .pipe($.replace('pkgTextDomain', pkg.config.textDomain, options))
-    .pipe($.replace('pkgConfigStartYear', pkg.config.startYear, options))
-    .pipe($.replace('pkgConfigEndYear', pkgConfigEndYear, options))
+    .pipe(replace('pkgVersion', pkg.version, options))
+    .pipe(replace('pkgHomepage', pkg.homepage, options))
+    .pipe(replace('pkgNamePretty', pkg.config.namePretty, options))
+    .pipe(replace('pkgNameShort', pkg.config.nameShort, options))
+    .pipe(replace('pkgSlug', pkg.config.slug, options))
+    .pipe(replace('pkgName', pkg.name, options))
+    .pipe(replace('pkgDescription', pkg.description, options))
+    .pipe(replace('pkgAuthorName', pkg.author.name, options))
+    .pipe(replace('pkgAuthorEmail', pkg.author.email, options))
+    .pipe(replace('pkgAuthorUrl', pkg.author.url, options))
+    .pipe(replace('pkgLicense', pkg.license, options))
+    .pipe(replace('pkgLicenseType', pkg.license.type, options))
+    .pipe(replace('pkgLicenseUrl', pkg.license.url, options))
+    .pipe(replace('pkgConfigTags', tags.join(', '), options))
+    .pipe(replace('pkgTextDomain', pkg.config.textDomain, options))
+    .pipe(replace('pkgConfigStartYear', pkg.config.startYear, options))
+    .pipe(replace('pkgConfigEndYear', pkgConfigEndYear, options))
     // delete all code annotations, regex matches: ' // @@ ....single/multi line content \\
-    .pipe($.replace(/(\s?\/\/\s@@(?:(?!\\\\)[\s\S])*\s\\\\)/g, '', options))
+    .pipe(replace(/(\s?\/\/\s@@(?:(?!\\\\)[\s\S])*\s\\\\)/g, '', options))
     .pipe(gulp.dest(PATHS.build.root));
 });
 

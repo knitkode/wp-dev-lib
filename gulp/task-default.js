@@ -1,6 +1,4 @@
-/* global gulp */
-/* jshint node: true */
-'use strict';
+const gulp = require('gulp');
 
 // @access public
 gulp.task('default', ['build', 'watch']);
