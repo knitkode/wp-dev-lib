@@ -4,7 +4,6 @@
 
 Differences from original repo
 ---------------
-- One of the main difference is that the branch to be deployed to WordPress or, in general, the production branch containing the code distributed to the users is the `production` branch and not `master`, which is instead used for development.
 - More rules to `phpcs.ruleset.xml`
 - Different `jshintrc` rules, less WordPress like
 - gulp folder with common tasks and utilities
