@@ -12,7 +12,7 @@ var rename = require('gulp-rename');
 var readmeToMarkdown = require('gulp-readme-to-markdown');
 var pathMoFiles = [
   path.join(PATH_BUILD_BASE, 'languages', '/*.mo'),
-  path.join('!' + PATH_BUILD_BASE, 'languages', pkg.config.textDomain + '-*.mo' )
+  path.join('!' + PATH_BUILD_BASE, 'languages', pkg.config.textdomain + '-*.mo' )
 ];
 
 // @access public
@@ -40,7 +40,7 @@ gulp.task('_release-lang-prepare', ['_release-replace-words'], sequence('grunt-l
 // @access private
 gulp.task('_release-lang-mo_rename', ['_release-lang-prepare'], function () {
   return gulp.src(pathMoFiles)
-    .pipe(rename({ prefix: pkg.config.textDomain + '-' }))
+    .pipe(rename({ prefix: pkg.config.textdomain + '-' }))
     .pipe(gulp.dest(path.join(PATH_BUILD_BASE, 'languages')));
 });
 
@@ -82,7 +82,7 @@ gulp.task('_release-replace-words', function () {
     ], { base: PATHS.build.root })
     .pipe(replace('pkgVersion', pkg.version, options))
     .pipe(replace('pkgHomepage', pkg.homepage, options))
-    .pipe(replace('pkgNamePretty', pkg.config.namePretty, options))
+    .pipe(replace('pkgTitle', pkg.config.title, options))
     .pipe(replace('pkgNameShort', pkg.config.nameShort, options))
     .pipe(replace('pkgSlug', pkg.config.slug, options))
     .pipe(replace('pkgName', pkg.name, options))
@@ -93,10 +93,10 @@ gulp.task('_release-replace-words', function () {
     .pipe(replace('pkgLicense', pkg.license, options))
     .pipe(replace('pkgLicenseType', pkg.license.type, options))
     .pipe(replace('pkgLicenseUrl', pkg.license.url, options))
-    .pipe(replace('pkgConfigTags', tags.join(', '), options))
-    .pipe(replace('pkgTextDomain', pkg.config.textDomain, options))
-    .pipe(replace('pkgConfigStartYear', pkg.config.startYear, options))
-    .pipe(replace('pkgConfigEndYear', pkgConfigEndYear, options))
+    .pipe(replace('pkgTags', tags.join(', '), options))
+    .pipe(replace('pkgTextdomain', pkg.config.textdomain, options))
+    .pipe(replace('pkgStartYear', pkg.config.startYear, options))
+    .pipe(replace('pkgEndYear', pkgConfigEndYear, options))
     // delete all code annotations, regex matches: ' // @@ ....single/multi line content \\
     .pipe(replace(/(\s?\/\/\s@@(?:(?!\\\\)[\s\S])*\s\\\\)/g, '', options))
     .pipe(gulp.dest(PATHS.build.root));

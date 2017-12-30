@@ -6,7 +6,7 @@ module.exports = {
   creditsPlaceholder: '/*! @license credits */',
   credits: [
     '/*!',
-    ' * <%= pkg.config.namePretty %> v<%= pkg.version %> (<%= pkg.homepage %>)',
+    ' * <%= pkg.config.title %> v<%= pkg.version %> (<%= pkg.homepage %>)',
     ' * <%= pkg.description %>',
     ' * Copyright (c) <%= pkg.config.startYear %><% if (new Date().getFullYear() > pkg.config.startYear) { %>-<%= new Date().getFullYear() %><% } %> <%= pkg.author.name %> <<%= pkg.author.email %>> (<%= pkg.author.url %>)',
     ' * @license <%= pkg.license %> (Last change on: <% var d = new Date(); print(d.getDate() + "-" + d.getMonth() + "-" + d.getFullYear()) %>)',
