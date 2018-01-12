@@ -71,7 +71,7 @@ module.exports = {
   },
   // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglify: {
-    preserveComments: 'license', // --comments
+    comments: 'license', // --comments
     toplevel: true,
     mangle: true, // --mangle
     compress: {
