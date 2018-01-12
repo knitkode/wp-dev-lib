@@ -71,7 +71,6 @@ module.exports = {
   },
   // https://github.com/mishoo/UglifyJS2#the-simple-way
   uglify: {
-    comments: 'license', // --comments
     toplevel: true,
     mangle: true, // --mangle
     compress: {
@@ -80,6 +79,9 @@ module.exports = {
         DEBUG: false // --define DEBUG=false
       }
     },
+    output: {
+      comments: 'license', // --comments
+    }
   },
   uglifyCustomScripts: { // @@temp see readme... \\
     mangleProperties: { // --mangle-props
