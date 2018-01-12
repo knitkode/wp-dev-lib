@@ -69,29 +69,29 @@ module.exports = {
   trimlines: {
     leading: false
   },
-  // https://github.com/mishoo/UglifyJS2#the-simple-way
+  // https://github.com/mishoo/UglifyJS2#api-reference
   uglify: {
     toplevel: true,
-    mangle: true, // --mangle
     compress: {
-      drop_console: true, // --compress drop_console=true
+      drop_console: true,
       global_defs: {
-        DEBUG: false // --define DEBUG=false
+        DEBUG: false
       }
     },
     output: {
-      comments: 'license', // --comments
+      comments: 'license',
     }
   },
-  uglifyCustomScripts: { // @@temp see readme... \\
-    mangleProperties: { // --mangle-props
-      regex: /^_(?!format|default|value|dirty|toggleActive|process)(.+)/, // --mangle-regex='/^_/'
+  uglifyCustomScripts: {
+    mangle: {
+      properties: {
+        regex: /^_(?!format|default|value|dirty|toggleActive|process)(.+)/,
+      }
     },
-    nameCache: '../customize-plus-premium/config/uglify--customize-name_cache.json', // --name-cache .tmp/uglify-cache.json
+    nameCache: '../customize-plus-premium/config/uglify--customize-name_cache.json',
     compress: {
-      unsafe: true // --compress unsafe=true
+      unsafe: true
     }
-    // reserveDomprops: true // --reserve-domprops
   },
   readmeToMarkdown: {
     screenshot_ext: ['jpg', 'jpg', 'png'],
