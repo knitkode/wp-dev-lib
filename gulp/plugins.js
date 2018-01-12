@@ -88,7 +88,6 @@ module.exports = {
         regex: /^_(?!format|default|value|dirty|toggleActive|process)(.+)/,
       }
     },
-    nameCache: '../customize-plus-premium/config/uglify--customize-name_cache.json',
     compress: {
       unsafe: true
     }
