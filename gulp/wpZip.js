@@ -17,14 +17,14 @@ function wpZipPreClean () {
 }
 
 function wpZipArchive () {
-	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpZip);
+	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpReleases);
   return gulp.src(paths.join(paths.DIST, '/**/*'))
     .pipe(zip(pkg.config.slug + '--' + pkg.version + '.zip'))
     .pipe(gulp.dest(paths.join(zipLocation, 'archive')));
 }
 
 function wpZipLastRelease () {
-	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpZip);
+	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpReleases);
   return gulp.src(paths.join(paths.DIST, '/**/*'))
     .pipe(zip(pkg.config.slug + '.zip'))
     .pipe(gulp.dest(zipLocation));

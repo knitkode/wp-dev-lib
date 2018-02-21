@@ -6,6 +6,7 @@ const gulp = require('gulp');
 const replace = require('gulp-replace');
 const wpLang = require('./wpLang');
 const wpReadme = require('./wpReadme');
+const wpZip = require('./wpZip');
 
 module.exports = function wpRelease (callback) {
   return gulp.series(
@@ -14,8 +15,9 @@ module.exports = function wpRelease (callback) {
     // gulp.parallel(
       wpReadme,
       wpIndexFiles,
-      wpReleaseAssets
+      wpReleaseAssets,
     // )
+    wpZip,
   )(callback);
 }
 
