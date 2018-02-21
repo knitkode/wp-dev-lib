@@ -13,7 +13,7 @@ module.exports = function wpZip (callback) {
 }
 
 function wpZipPreClean () {
-	del.sync(paths.join(paths.DIST, '/*.md'));
+	return del(paths.join(paths.DIST, '*.md'));
 }
 
 function wpZipArchive () {
