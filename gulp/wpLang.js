@@ -1,12 +1,18 @@
 const paths = require('../paths');
 const pkg = require(paths.join(paths.ROOT, 'package.json'));
 const gulp = require('gulp');
-// const wpPot = require('gulp-wp-pot');
-// const wpi18n = require('node-wp-i18n');
-// const through = require('through2');
-// const checktextdomain = require('gulp-checktextdomain');
-// const potomo = require('gulp-potomo');
+const wpPot = require('gulp-wp-pot');
+const wpi18n = require('node-wp-i18n');
+const through = require('through2');
+const checktextdomain = require('gulp-checktextdomain');
+const potomo = require('gulp-potomo');
 
+/**
+ * WordPress language task
+ *
+ * It automates the process related to the internationalization of a WordPress
+ * package.
+ */
 module.exports = function wpLang (callback) {
   return gulp.series(
     wpLangAddTextDomain,
@@ -16,6 +22,12 @@ module.exports = function wpLang (callback) {
   )(callback);
 }
 
+/**
+ * Add language text domain
+ *
+ * Automatically adds the textdomain to translatable php strings using the
+ * `textdomain` specified in the project's package.json.
+ */
 function wpLangAddTextDomain () {
   let files = [];
 
@@ -23,23 +35,29 @@ function wpLangAddTextDomain () {
     paths.join(paths.dist.includes, '**/*.php'),
     paths.join(paths.DIST, '*.php')
   ])
-    .pipe(require('through2').obj(function (file, enc, cb) {
+    .pipe(through.obj(function (file, enc, cb) {
       files.push(file.path);
       cb(null, file);
     }, function(cb){
-      require('node-wp-i18n').addtextdomain(files, {
+      require(wpi18n.addtextdomain(files, {
         textdomain: pkg.config.textdomain,
       });
       cb();
     }));
 }
 
+/**
+ * Check textdomain
+ *
+ * It make sure all php localizable output function have the right textdomain
+ * specified in the project's package.json.
+ */
 function wpLangCheckTextDomain () {
   return gulp.src([
       paths.join(paths.dist.includes, '**/*.php'),
       paths.join(paths.DIST, '*.php')
     ])
-    .pipe(require('gulp-checktextdomain')({
+    .pipe(checktextdomain({
       text_domain: pkg.config.textdomain,
       keywords: [
         '__:1,2d',
@@ -60,12 +78,18 @@ function wpLangCheckTextDomain () {
     }));
 }
 
+/**
+ * Make POT files
+ *
+ * Auto generates .pot files and places them in the `languages` subfolder of the
+ * dist folder.
+ */
 function wpLangMakePot () {
   return gulp.src([
       paths.join(paths.dist.includes, '**/*.php'),
       paths.join(paths.DIST, '*.php')
     ])
-    .pipe(require('gulp-wp-pot')({
+    .pipe(wpPot({
       bugReport: pkg.bugs.url,// {string} undefined; Header with URL for reporting translation bugs
       // commentKeyword: // {string} 'translators'; Description: Keyword to trigger translator comment.
       domain: pkg.config.textdomain, // {string} undefined; Domain to retrieve the translated text. All textdomains is included if undefined.
@@ -80,9 +104,15 @@ function wpLangMakePot () {
     .pipe(gulp.dest(paths.join(paths.dist.languages, `${pkg.config.textdomain}.pot`)));
 }
 
+/**
+ * PO to MO
+ *
+ * Autogenerate .mo files from .po files and places them in the `languages`
+ * subfolder of the dist folder.
+ */
 function wpLangPotomo () {
   return gulp.src(paths.join(paths.dist.languages, '*.po'))
-    .pipe(require('gulp-potomo')({ poDel: true }))
+    .pipe(potomo({ poDel: true }))
     .pipe(gulp.dest(paths.join(paths.dist.languages)));
 }
 

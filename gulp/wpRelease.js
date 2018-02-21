@@ -8,19 +8,30 @@ const wpLang = require('./wpLang');
 const wpReadme = require('./wpReadme');
 const wpZip = require('./wpZip');
 
+/**
+ * WordPress release task
+ *
+ * First replace words, then create language, readme and empty missing
+ * index.php files, prepare the standard assets for WordPress.org and finally
+ * create a distributable zip.
+ */
 module.exports = function wpRelease (callback) {
   return gulp.series(
     wpReleaseReplaceWords,
     wpLang,
-    // gulp.parallel(
-      wpReadme,
-      wpIndexFiles,
-      wpReleaseAssets,
-    // )
+    wpIndexFiles,
+    wpReleaseAssets,
     wpZip,
+    wpReadme,
   )(callback);
 }
 
+/**
+ * Replace words before release
+ *
+ * Substitute `pkg...` text placeholders with data from package.json
+ * and strip out private annotations (which must follow a strict convention)
+ */
 function wpReleaseReplaceWords () {
   var options = { skipBinary: true };
   var pkgConfigEndYear = (new Date().getFullYear() > pkg.config.startYear) ? new Date().getFullYear() : '';
@@ -53,10 +64,10 @@ function wpReleaseReplaceWords () {
 }
 
 /**
- * Put an index file in each folder of the built project
- * without overriding a possible already existing one.
+ * Put an index.php file in each folder of the built project without overriding
+ * a possible already existing one.
  *
- * {@link https://github.com/gulpjs/gulp/blob/master/docs/recipes/running-task-steps-per-folder.md}
+ * {@link https://git.io/vAu5v}
  * {@link http://stackoverflow.com/a/30348965/1938970, source(if file exists)}
  */
 function wpIndexFiles () {
@@ -70,7 +81,8 @@ function wpIndexFiles () {
 
   indexPaths.forEach(function (filePath) {
     fs.stat(filePath, function (err) {
-      if (err !== null) { // don't overwrite if file is there
+      // don't overwrite if file is there
+      if (err !== null) {
         fs.writeFileSync(filePath, fileContent);
       }
     });
@@ -78,9 +90,17 @@ function wpIndexFiles () {
   return gulp.src('*.dummmmy').pipe(gulp.dest(paths.DIST));
 }
 
+/**
+ * Copy assets for WordPress releases
+ *
+ * Grabs the banners, icons and screenshot from the `wpAssets` path indicated
+ * in the project's package.json and copy them to the dist folder.
+ */
 function wpReleaseAssets() {
   const uiPath = paths.join(paths.ROOT, pkg.config.paths.wpAssets);
   return gulp.src([
+    '!' + paths.join(uiPath, '_*.svg'),
+    '!' + paths.join(uiPath, '.dev.svg'),
     paths.join(uiPath, 'banner*.svg'),
     // paths.join(uiPath, 'banner-*.png'),
     paths.join(uiPath, 'icon*.svg'),
