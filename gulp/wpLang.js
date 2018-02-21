@@ -39,7 +39,7 @@ function wpLangAddTextDomain () {
       files.push(file.path);
       cb(null, file);
     }, function(cb){
-      require(wpi18n.addtextdomain(files, {
+      wpi18n.addtextdomain(files, {
         textdomain: pkg.config.textdomain,
       });
       cb();
