@@ -27,5 +27,5 @@ function wpZipLastRelease () {
 	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpZip);
   return gulp.src(paths.join(paths.DIST, '/**/*'))
     .pipe(zip(pkg.config.slug + '.zip'))
-    .pipe(gulp.dest(zipLocation);
+    .pipe(gulp.dest(zipLocation));
 }
