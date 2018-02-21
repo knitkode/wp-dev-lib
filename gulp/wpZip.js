@@ -20,7 +20,7 @@ function wpZipArchive () {
 	const zipLocation = paths.join(paths.ROOT, pkg.config.paths.wpZip);
   return gulp.src(paths.join(paths.DIST, '/**/*'))
     .pipe(zip(pkg.config.slug + '--' + pkg.version + '.zip'))
-    .pipe(gulp.dest(paths.join(zipLocation, 'archive'));
+    .pipe(gulp.dest(paths.join(zipLocation, 'archive')));
 }
 
 function wpZipLastRelease () {
