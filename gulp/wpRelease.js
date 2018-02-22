@@ -17,10 +17,11 @@ const wpZip = require('./wpZip');
  */
 module.exports = function wpRelease (callback) {
   return gulp.series(
-    wpReleaseReplaceWords,
+    wpReplaceWords,
     wpLang,
     wpIndexFiles,
-    wpReleaseAssets,
+    wpAssets,
+    wpAssetsClean,
     wpZip,
     wpReadme,
   )(callback);
@@ -32,10 +33,10 @@ module.exports = function wpRelease (callback) {
  * Substitute `pkg...` text placeholders with data from package.json
  * and strip out private annotations (which must follow a strict convention)
  */
-function wpReleaseReplaceWords () {
-  var options = { skipBinary: true };
-  var pkgConfigEndYear = (new Date().getFullYear() > pkg.config.startYear) ? new Date().getFullYear() : '';
-  var tags = pkg.config.tags || [];
+function wpReplaceWords () {
+  const options = { skipBinary: true };
+  const pkgConfigEndYear = (new Date().getFullYear() > pkg.config.startYear) ? new Date().getFullYear() : '';
+  const tags = pkg.config.tags || [];
 
   return gulp.src([
       paths.join(paths.DIST, '/**/*.*'),
@@ -71,9 +72,9 @@ function wpReleaseReplaceWords () {
  * {@link http://stackoverflow.com/a/30348965/1938970, source(if file exists)}
  */
 function wpIndexFiles () {
-  var fileName = 'index.php';
-  var fileContent = '<?php // Silence is golden';
-  var indexPaths = [paths.join(paths.DIST, fileName)];
+  const fileName = 'index.php';
+  const fileContent = '<?php // Silence is golden';
+  const indexPaths = [paths.join(paths.DIST, fileName)];
 
   folders(paths.DIST).map(function (folder) {
     indexPaths.push(paths.join(paths.DIST, folder, fileName));
@@ -96,7 +97,7 @@ function wpIndexFiles () {
  * Grabs the banners, icons and screenshot from the `wpAssets` path indicated
  * in the project's package.json and copy them to the dist folder.
  */
-function wpReleaseAssets() {
+function wpAssets() {
   const uiPath = paths.join(paths.ROOT, pkg.config.paths.wpAssets);
   return gulp.src([
     '!' + paths.join(uiPath, '_*.svg'),
@@ -108,5 +109,19 @@ function wpReleaseAssets() {
     paths.join(uiPath, 'screenshot-*.png'),
     paths.join(uiPath, 'screenshot-*.jpg'),
   ])
-  .pipe(gulp.dest(paths.join(paths.DIST, '/assets/')));
+  .pipe(gulp.dest(paths.dist.assets));
+}
+
+/**
+ * Clean private assets for WordPress releases
+ *
+ * This is needed just because the negation path in the above task does not work
+ */
+function wpAssetsClean() {
+  return del([
+    paths.join(paths.dist.assets, '_*.svg'),
+    paths.join(paths.dist.assets, '.dev.svg'),
+    paths.join(paths.dist.assets, '_*.png'),
+    paths.join(paths.dist.assets, '.dev.png'),
+  ], { force: true });
 }
