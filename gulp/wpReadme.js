@@ -1,8 +1,5 @@
 const paths = require('../paths');
-const del = require('del');
 const gulp = require('gulp');
-const replace = require('gulp-replace');
-const rename = require('gulp-rename');
 const shell = require('gulp-shell');
 
 /**
