@@ -25,7 +25,7 @@ module.exports = function wpZip (callback) {
  * readibility on github or gitlab
  */
 function wpZipClean () {
-  return del(paths.join(paths.DIST, '*.md'));
+  return del(paths.join(paths.DIST, '*.md'), { force: true });
 }
 
 /**
