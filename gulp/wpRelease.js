@@ -104,9 +104,11 @@ function wpAssets() {
     // '!' + paths.join(uiPath, '_*.svg'),
     // '!' + paths.join(uiPath, '.dev.svg'),
     paths.join(uiPath, 'banner.svg'),
-    paths.join(uiPath, 'banner-*.png'),
+    paths.join(uiPath, 'banner-772x250.png'),
+    paths.join(uiPath, 'banner-1544x500.png'),
     paths.join(uiPath, 'icon.svg'),
-    paths.join(uiPath, 'icon-*.png'),
+    paths.join(uiPath, 'icon-128x128.png'),
+    paths.join(uiPath, 'icon-256x256.png'),
     paths.join(uiPath, 'screenshot-*.png'),
     paths.join(uiPath, 'screenshot-*.jpg'),
   ])
