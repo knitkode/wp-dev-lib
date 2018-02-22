@@ -3,6 +3,7 @@ const pkg = require(paths.join(paths.ROOT, 'package.json'));
 const fs = require('fs');
 const folders = require('../utils/get-folders');
 const gulp = require('gulp');
+const del = require('del');
 const replace = require('gulp-replace');
 const wpLang = require('./wpLang');
 const wpReadme = require('./wpReadme');
@@ -100,12 +101,12 @@ function wpIndexFiles () {
 function wpAssets() {
   const uiPath = paths.join(paths.ROOT, pkg.config.paths.wpAssets);
   return gulp.src([
-    '!' + paths.join(uiPath, '_*.svg'),
-    '!' + paths.join(uiPath, '.dev.svg'),
-    paths.join(uiPath, 'banner*.svg'),
-    // paths.join(uiPath, 'banner-*.png'),
-    paths.join(uiPath, 'icon*.svg'),
-    // paths.join(uiPath, 'icon-*.png'),
+    // '!' + paths.join(uiPath, '_*.svg'),
+    // '!' + paths.join(uiPath, '.dev.svg'),
+    paths.join(uiPath, 'banner.svg'),
+    paths.join(uiPath, 'banner-*.png'),
+    paths.join(uiPath, 'icon.svg'),
+    paths.join(uiPath, 'icon-*.png'),
     paths.join(uiPath, 'screenshot-*.png'),
     paths.join(uiPath, 'screenshot-*.jpg'),
   ])
@@ -119,9 +120,9 @@ function wpAssets() {
  */
 function wpAssetsClean() {
   return del([
-    paths.join(paths.dist.assets, '_*.svg'),
-    paths.join(paths.dist.assets, '.dev.svg'),
-    paths.join(paths.dist.assets, '_*.png'),
-    paths.join(paths.dist.assets, '.dev.png'),
+    paths.join(paths.dist.assets, '**/_*.svg'),
+    paths.join(paths.dist.assets, '**/*.dev.svg'),
+    paths.join(paths.dist.assets, '**/_*.png'),
+    paths.join(paths.dist.assets, '**/*.dev.png'),
   ], { force: true });
 }
