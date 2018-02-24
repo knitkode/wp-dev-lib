@@ -41,7 +41,7 @@ function wpDeployCopyReadme() {
  */
 function wpDeployDistributableSource (callback) {
   return ghPages.publish(paths.DIST, extend({
-    remote: 'github',
+    remote: 'origin',
     branch: 'master',
   }, pkg.config.deployGithub || {}), callback);
 }
