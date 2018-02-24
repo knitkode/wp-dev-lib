@@ -57,9 +57,9 @@ function wpDeployDistributableSource (callback) {
  */
 function wpDeployCleanReadme() {
   return del([
-      paths.join(paths.ROOT, 'readme.md',
-        paths.join(paths.DIST, 'README.md'
-    ]), { force: true });
+      paths.join(paths.ROOT, 'readme.md'),
+      paths.join(paths.DIST, 'README.md'),
+    ], { force: true });
 }
 
 /**
