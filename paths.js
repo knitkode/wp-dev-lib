@@ -47,7 +47,7 @@ paths.src = {
   npm: paths.join(paths.ROOT, pkgPaths.srcNpm || 'node_modules'),
   vendor: paths.join(paths.SRC, pkgPaths.srcVendor || 'vendor'),
   jekyll: paths.join(paths.SRC, pkgPaths.srcJekyll || 'jekyll'),
-  includes: paths.join(paths.SRC, pkgPaths.srcIncludes || 'includes'),
+  php: paths.join(paths.SRC, pkgPaths.srcPhp || 'php'),
   views: paths.join(paths.SRC, pkgPaths.srcViews || 'views'),
   data: paths.join(paths.SRC, pkgPaths.srcData || 'data'),
   images: paths.join(paths.SRC, pkgPaths.srcImages || 'images'),
@@ -62,18 +62,13 @@ paths.dist = {
   vendor: paths.join(paths.DIST, pkgPaths.distVendor || 'vendor'),
   jekyll: pkgPaths.distJekyll ? paths.join(paths.ROOT, pkgPaths.distJekyll) : paths.DIST,
   languages: paths.join(paths.DIST, pkgPaths.distLanguages || 'languages'),
-  includes: paths.join(paths.DIST, pkgPaths.distIncludes || 'includes'),
+  php: paths.join(paths.DIST, pkgPaths.distPhp || 'php'),
   assets: paths.join(paths.DIST, pkgPaths.distAssets || 'assets'),
   data: paths.join(paths.DIST, pkgPaths.distData || 'data'),
   images: paths.join(paths.DIST, pkgPaths.assets || '', pkgPaths.distImages || 'images'),
   fonts: paths.join(paths.DIST, pkgPaths.assets || '', pkgPaths.distFonts || 'fonts'),
   styles: paths.join(paths.DIST, pkgPaths.assets || '', pkgPaths.distStyles || 'styles'),
   scripts: paths.join(paths.DIST, pkgPaths.assets || '', pkgPaths.distScripts || 'scripts'),
-  // @@todo for WordPress Plugins and Customize Builder I should have different paths
-  // make a system to override in root repo
-  // images: paths.join(paths.DIST, 'assets/images'),
-  // styles: paths.join(paths.DIST, 'assets/css'),
-  // scripts: paths.join(paths.DIST, 'assets/js'),
 };
 
 module.exports = paths;
