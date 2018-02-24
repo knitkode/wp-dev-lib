@@ -21,8 +21,6 @@ module.exports = function wpRelease (callback) {
     wpReplaceWords,
     wpLang,
     wpIndexFiles,
-    wpAssets,
-    wpAssetsClean,
     wpZip,
     wpReadme,
   )(callback);
@@ -90,41 +88,4 @@ function wpIndexFiles () {
     });
   });
   return gulp.src('*.dummmmy').pipe(gulp.dest(paths.DIST));
-}
-
-/**
- * Copy assets for WordPress releases
- *
- * Grabs the banners, icons and screenshot from the `wpAssets` path indicated
- * in the project's package.json and copy them to the dist folder.
- */
-function wpAssets() {
-  const uiPath = paths.join(paths.ROOT, pkg.config.paths.wpAssets);
-  return gulp.src([
-    // '!' + paths.join(uiPath, '_*.svg'),
-    // '!' + paths.join(uiPath, '.dev.svg'),
-    // paths.join(uiPath, 'banner.svg'),
-    paths.join(uiPath, 'banner-772x250.png'),
-    paths.join(uiPath, 'banner-1544x500.png'),
-    paths.join(uiPath, 'icon.svg'),
-    paths.join(uiPath, 'icon-128x128.png'),
-    paths.join(uiPath, 'icon-256x256.png'),
-    paths.join(uiPath, 'screenshot-*.png'),
-    paths.join(uiPath, 'screenshot-*.jpg'),
-  ])
-  .pipe(gulp.dest(paths.dist.assets));
-}
-
-/**
- * Clean private assets for WordPress releases
- *
- * This is needed just because the negation path in the above task does not work
- */
-function wpAssetsClean() {
-  return del([
-    paths.join(paths.dist.assets, '**/_*.svg'),
-    paths.join(paths.dist.assets, '**/*.dev.svg'),
-    paths.join(paths.dist.assets, '**/_*.png'),
-    paths.join(paths.dist.assets, '**/*.dev.png'),
-  ], { force: true });
 }
