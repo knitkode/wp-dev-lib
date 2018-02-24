@@ -43,13 +43,13 @@ function wpReplaceWords () {
       paths.join(paths.DIST, '/**/*.*'),
       '!' + paths.join(paths.DIST, '/**/vendor/**.*'),
     ], { base: paths.DIST })
-    .pipe(replace('pkgVersion', pkg.version, options))
-    .pipe(replace('pkgHomepage', pkg.homepage, options))
-    .pipe(replace('pkgNamePretty', pkg.config.namePretty, options))
-    .pipe(replace('pkgNameShort', pkg.config.nameShort, options))
-    .pipe(replace('pkgSlug', pkg.config.slug, options))
     .pipe(replace('pkgName', pkg.name, options))
+    .pipe(replace('pkgVersion', pkg.version, options))
     .pipe(replace('pkgDescription', pkg.description, options))
+    .pipe(replace('pkgTitle', pkg.config.title, options))
+    .pipe(replace('pkgSlug', pkg.config.slug, options))
+    .pipe(replace('pkgShortname', pkg.config.shortname, options))
+    .pipe(replace('pkgHomepage', pkg.homepage, options))
     .pipe(replace('pkgAuthorName', pkg.author.name, options))
     .pipe(replace('pkgAuthorEmail', pkg.author.email, options))
     .pipe(replace('pkgAuthorUrl', pkg.author.url, options))

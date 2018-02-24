@@ -1,5 +1,5 @@
 #!/bin/bash
-# Given a svn-url file one directory up, export the latest git commits to the specified SVN repo.
+# Given a svn-url file two directory up, export the latest git commits to the specified SVN repo.
 # Create a git release tag from the version specified in the plugin file.
 # Author: Weston Ruter (@westonruter)
 
@@ -7,6 +7,7 @@ set -e
 
 cd "$( dirname $0 )"
 dev_lib_dir=$(pwd)
+cd ..
 cd ..
 
 
@@ -33,11 +34,14 @@ while getopts 'f' option; do
 	esac
 done
 
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [ $current_branch != 'master' ]; then
-	echo "Please checkout the master branch"
-	exit 1
-fi
+# always checkout to master
+git checkout master
+
+# current_branch=$(git rev-parse --abbrev-ref HEAD)
+# if [ $current_branch != 'master' ]; then
+# 	echo "Please checkout the master branch"
+# 	exit 1
+# fi
 
 if [ -n "$(git status -s -uno)" ] && [ -z "$force" ]; then
 	git status
@@ -47,14 +51,15 @@ fi
 
 git_root=$(pwd)
 
-if [ -e readme.txt ]; then
-	$dev_lib_dir/generate-markdown-readme
-	git add readme.md
-fi
-if [ -n "$(git status --porcelain readme.md)" ]; then
-	echo "Please commit (--amend?) the updated readme.md"
-	exit 1
-fi
+# This is managed by a gulp task
+# if [ -e readme.txt ]; then
+# 	$dev_lib_dir/generate-markdown-readme
+# 	git add readme.md
+# fi
+# if [ -n "$(git status --porcelain readme.md)" ]; then
+# 	echo "Please commit (--amend?) the updated readme.md"
+# 	exit 1
+# fi
 
 git pull --ff-only origin master
 git push origin master
